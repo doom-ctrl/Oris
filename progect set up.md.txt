@@ -1,0 +1,20 @@
+
+---
+
+## ⚡ Project Setup Automation
+
+This command will:
+1. Create the project.
+2. Initialize TailwindCSS, shadcn/ui, and Framer Motion.
+3. Add all core components (Button, Card, Input, etc.)
+4. Create the starter folder structure.
+
+```bash
+# 🧱 Create and configure Assessment Manager app
+npx create-next-app@latest assessment-manager --typescript --tailwind --eslint --app --import-alias "@/*" && \
+cd assessment-manager && \
+npm install lucide-react class-variance-authority tailwind-variants clsx framer-motion && \
+npx shadcn@latest init -y && \
+npx shadcn@latest add button card input badge dialog dropdown-menu progress separator sheet skeleton tabs textarea tooltip && \
+mkdir -p components/{layout,assessment,task,motion,ui} app/{assessments/[id],progress,planner} lib styles && \
+touch components/motion/MotionWrapper.tsx lib/utils.ts styles/globals.css
