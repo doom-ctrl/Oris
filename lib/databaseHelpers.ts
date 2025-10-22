@@ -57,7 +57,10 @@ export const assessmentHelpers = {
       console.error('Error creating assessment:', error)
       throw error
     }
-    return data!
+    if (!data) {
+      throw new Error('Failed to create assessment - no data returned')
+    }
+    return data
   },
 
   // Update assessment
@@ -74,7 +77,10 @@ export const assessmentHelpers = {
       console.error('Error updating assessment:', error)
       throw error
     }
-    return data!
+    if (!data) {
+      throw new Error('Failed to update assessment - no data returned')
+    }
+    return data
   },
 
   // Delete assessment
@@ -136,7 +142,10 @@ export const taskHelpers = {
       console.error('Error creating task:', error)
       throw error
     }
-    return data!
+    if (!data) {
+      throw new Error('Operation failed - no data returned')
+    }
+    return data
   },
 
   // Update task
@@ -153,7 +162,10 @@ export const taskHelpers = {
       console.error('Error updating task:', error)
       throw error
     }
-    return data!
+    if (!data) {
+      throw new Error('Operation failed - no data returned')
+    }
+    return data
   },
 
   // Delete task
@@ -248,7 +260,10 @@ export const progressHelpers = {
     )
 
     if (error) throw error
-    return data!
+    if (!data) {
+      throw new Error('Operation failed - no data returned')
+    }
+    return data
   }
 }
 
@@ -279,7 +294,10 @@ export const plannerHelpers = {
     )
 
     if (error) throw error
-    return data!
+    if (!data) {
+      throw new Error('Operation failed - no data returned')
+    }
+    return data
   },
 
   // Update planner session
@@ -293,7 +311,10 @@ export const plannerHelpers = {
     )
 
     if (error) throw error
-    return data!
+    if (!data) {
+      throw new Error('Operation failed - no data returned')
+    }
+    return data
   },
 
   // Delete planner session
@@ -334,7 +355,10 @@ export const subjectHelpers = {
     )
 
     if (error) throw error
-    return data!
+    if (!data) {
+      throw new Error('Operation failed - no data returned')
+    }
+    return data
   }
 }
 
@@ -372,6 +396,9 @@ export const profileHelpers = {
     )
 
     if (error) throw error
-    return data!
+    if (!data) {
+      throw new Error('Failed to upsert profile - no data returned')
+    }
+    return data
   }
 }

@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 import {
   Home,
@@ -71,10 +72,17 @@ export function Navigation() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-semibold">
-                AM
+              <div className="h-10 w-10 flex-shrink-0">
+                <Image
+                  src="/logo.svg"
+                  alt="Oris"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                  priority
+                />
               </div>
-              <span className="font-semibold text-lg">Assessment Manager</span>
+              <span className="font-semibold text-lg">Oris</span>
             </Link>
 
             <div className="hidden md:flex items-center space-x-1">

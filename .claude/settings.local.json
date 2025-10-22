@@ -11,7 +11,11 @@
       "Bash(pkill:*)",
       "Bash(netstat:*)",
       "Bash(findstr:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(dir:*)",
+      "Bash(cp:*)",
+      "Bash(npx expo start:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

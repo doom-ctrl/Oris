@@ -50,8 +50,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .from('profiles')
             .insert({
               id: user.id,
-              email: user.email,
-              full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+              email: user.email || '',
+              first_name: user.user_metadata?.first_name || '',
+              last_name: user.user_metadata?.last_name || '',
               avatar_url: user.user_metadata?.avatar_url || null
             })
             .select()
@@ -60,12 +61,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (createError) {
           console.error('Error creating profile:', createError)
           setProfile(null)
-        } else {
+        } else if (newProfile) {
           setProfile(newProfile)
         }
       } else {
         // Profile exists, use the first one
-        setProfile(profiles[0])
+        setProfile(profiles[0] as Profile)
       }
     } catch (error) {
       console.error('Error in refreshProfile:', error)

@@ -5,6 +5,7 @@ import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { createBrowserSupabaseClient } from '@/lib/supabase-client'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function AuthPage() {
   const [supabase] = useState(() => createBrowserSupabaseClient())
@@ -21,14 +22,21 @@ export default function AuthPage() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <div className="h-8 w-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-semibold">
-              AM
+          <Link href="/" className="inline-flex items-center space-x-3 hover:opacity-80 transition-opacity">
+            <div className="h-12 w-12 flex-shrink-0">
+              <Image
+                src="/logo.svg"
+                alt="Oris"
+                width={48}
+                height={48}
+                className="object-contain"
+                priority
+              />
             </div>
-            <span className="text-xl font-semibold text-foreground">Assessment Manager</span>
+            <span className="text-2xl font-bold text-foreground">Oris</span>
           </Link>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Sign in to manage your assessments
+          <p className="mt-4 text-muted-foreground">
+            Your intelligent assessment and progress management platform
           </p>
         </div>
 
@@ -88,8 +96,8 @@ export default function AuthPage() {
                     inputBorderWidth: '1px',
                   },
                   radii: {
-                    borderRadiusButton: 'var(--radius)',
-                    borderRadiusInput: 'var(--radius)',
+                    buttonBorderRadius: 'var(--radius)',
+                    inputBorderRadius: 'var(--radius)',
                   },
                 }
               },
@@ -119,7 +127,7 @@ export default function AuthPage() {
                   loading_button_label: 'Signing in...',
                   social_provider_text: 'Sign in with {{provider}}',
                   link_text: "Already have an account? Sign in",
-                  forgotten_password_text: 'Forgot your password?',
+                  forgot_password_text: 'Forgot your password?',
                 },
                 sign_up: {
                   email_label: 'Email address',

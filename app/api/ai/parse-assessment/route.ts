@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server'
-import { parseAssessmentFromAI, smartParseAssessments, getUserContext, validateParsedAssessment, createFallbackAssessment, type ParsedAssessment, type SmartParseResponse } from '@/lib/aiClient'
+import { smartParseAssessments, getUserContext, validateParsedAssessment, createFallbackAssessment, type ParsedAssessment, type SmartParseResponse } from '@/lib/aiClient'
 import { safeInsertSingle } from '@/lib/supabase-utils'
 import { NextRequest, NextResponse } from 'next/server'
 

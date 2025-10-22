@@ -15,19 +15,19 @@ export interface SupabaseResponse<T> {
  * Handles the common case where .single() might cause 406 errors
  */
 export async function safeSingle<T>(
-  queryPromise: Promise<{ data: T[] | null; error: PostgrestError | null }>
+  queryBuilder: any
 ): Promise<SupabaseResponse<T>> {
   try {
-    const { data, error } = await queryPromise
+    const { data, error } = await queryBuilder
 
     if (error) {
       return { data: null, error }
     }
 
-    if (!data || data.length === 0) {
-      return { 
-        data: null, 
-        error: { 
+    if (!data || (Array.isArray(data) && data.length === 0)) {
+      return {
+        data: null,
+        error: {
           message: 'No rows found',
           code: 'PGRST116',
           details: '',
@@ -36,14 +36,18 @@ export async function safeSingle<T>(
       }
     }
 
-    if (data.length > 1) {
+    // Handle both single object and array responses
+    const result = Array.isArray(data) ? data[0] : data
+
+    // Warn if multiple rows were returned but we expected single
+    if (Array.isArray(data) && data.length > 1) {
       console.warn('Multiple rows returned when expecting single row, using first result')
     }
 
-    return { data: data[0], error: null }
+    return { data: result, error: null }
   } catch (error) {
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: {
         message: error instanceof Error ? error.message : 'Unknown error',
         code: 'UNKNOWN',
@@ -58,19 +62,19 @@ export async function safeSingle<T>(
  * Safely executes a Supabase insert operation that expects a single result
  */
 export async function safeInsertSingle<T>(
-  queryPromise: Promise<{ data: T[] | null; error: PostgrestError | null }>
+  queryBuilder: any
 ): Promise<SupabaseResponse<T>> {
   try {
-    const { data, error } = await queryPromise
+    const { data, error } = await queryBuilder
 
     if (error) {
       return { data: null, error }
     }
 
-    if (!data || data.length === 0) {
-      return { 
-        data: null, 
-        error: { 
+    if (!data || (Array.isArray(data) && data.length === 0)) {
+      return {
+        data: null,
+        error: {
           message: 'Insert operation failed - no data returned',
           code: 'INSERT_FAILED',
           details: '',
@@ -79,10 +83,12 @@ export async function safeInsertSingle<T>(
       }
     }
 
-    return { data: data[0], error: null }
+    // Handle both single object and array responses
+    const result = Array.isArray(data) ? data[0] : data
+    return { data: result, error: null }
   } catch (error) {
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: {
         message: error instanceof Error ? error.message : 'Unknown error',
         code: 'UNKNOWN',
@@ -97,19 +103,19 @@ export async function safeInsertSingle<T>(
  * Safely executes a Supabase update operation that expects a single result
  */
 export async function safeUpdateSingle<T>(
-  queryPromise: Promise<{ data: T[] | null; error: PostgrestError | null }>
+  queryBuilder: any
 ): Promise<SupabaseResponse<T>> {
   try {
-    const { data, error } = await queryPromise
+    const { data, error } = await queryBuilder
 
     if (error) {
       return { data: null, error }
     }
 
-    if (!data || data.length === 0) {
-      return { 
-        data: null, 
-        error: { 
+    if (!data || (Array.isArray(data) && data.length === 0)) {
+      return {
+        data: null,
+        error: {
           message: 'Update operation failed - no rows affected',
           code: 'UPDATE_FAILED',
           details: '',
@@ -118,10 +124,12 @@ export async function safeUpdateSingle<T>(
       }
     }
 
-    return { data: data[0], error: null }
+    // Handle both single object and array responses
+    const result = Array.isArray(data) ? data[0] : data
+    return { data: result, error: null }
   } catch (error) {
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: {
         message: error instanceof Error ? error.message : 'Unknown error',
         code: 'UNKNOWN',

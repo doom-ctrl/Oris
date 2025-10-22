@@ -109,19 +109,39 @@ export default function ProfilePage() {
 
     setIsLoading(true)
     try {
-      await profileHelpers.upsertProfile({
+      // Build profile data with only the fields that exist
+      const profileData: Partial<Profile> & { id: string; email: string } = {
         id: user.id,
         email: user.email || '',
-        ...formData
-      })
+      }
+
+      // Only include fields that have values and might not exist in the schema
+      if (formData.first_name.trim()) {
+        profileData.first_name = formData.first_name.trim()
+      }
+      if (formData.last_name.trim()) {
+        profileData.last_name = formData.last_name.trim()
+      }
+      if (formData.avatar_url.trim()) {
+        profileData.avatar_url = formData.avatar_url.trim()
+      }
+
+      await profileHelpers.upsertProfile(profileData)
 
       await refreshProfile()
       setIsEditing(false)
       setErrors({})
       toast.success('Profile updated successfully!')
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error updating profile:', error)
-      toast.error('Failed to update profile. Please try again.')
+
+      // Handle specific database column errors
+      const supabaseError = error as { code?: string }
+      if (supabaseError?.code === 'PGRST204') {
+        toast.error('Some profile fields are not yet available in the database. Please update the database schema.')
+      } else {
+        toast.error('Failed to update profile. Please try again.')
+      }
     } finally {
       setIsLoading(false)
     }
@@ -195,6 +215,22 @@ export default function ProfilePage() {
                     <Camera className="h-4 w-4" />
                   </Button>
                 )}
+              </div>
+            </div>
+
+            {/* Database Schema Notice */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <div className="flex items-start space-x-3">
+                <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-medium text-amber-800">Database Setup Required</h4>
+                  <p className="text-sm text-amber-700 mt-1">
+                    Some profile fields may not be available yet. To enable all features, run the SQL migration script in your Supabase SQL editor:
+                  </p>
+                  <code className="text-xs bg-amber-100 px-2 py-1 rounded mt-2 block">
+                    /database/migrations/001_add_profile_columns.sql
+                  </code>
+                </div>
               </div>
             </div>
 
