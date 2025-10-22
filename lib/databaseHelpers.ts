@@ -1,4 +1,5 @@
 import { createBrowserSupabaseClient } from './supabase-client'
+import { safeInsertSingle, safeUpdateSingle } from './supabase-utils'
 import type {
   Assessment,
   Task,
@@ -45,33 +46,35 @@ export const assessmentHelpers = {
 
   // Create new assessment
   async createAssessment(assessment: Omit<Assessment, 'id' | 'user_id' | 'created_at' | 'updated_at'>, userId: string): Promise<Assessment> {
-    const { data, error } = await supabase
-      .from('assessments')
-      .insert({ ...assessment, user_id: userId })
-      .select()
-      .single()
+    const { data, error } = await safeInsertSingle(
+      supabase
+        .from('assessments')
+        .insert({ ...assessment, user_id: userId })
+        .select()
+    )
 
     if (error) {
       console.error('Error creating assessment:', error)
       throw error
     }
-    return data
+    return data!
   },
 
   // Update assessment
   async updateAssessment(id: string, updates: Partial<Assessment>): Promise<Assessment> {
-    const { data, error } = await supabase
-      .from('assessments')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single()
+    const { data, error } = await safeUpdateSingle(
+      supabase
+        .from('assessments')
+        .update(updates)
+        .eq('id', id)
+        .select()
+    )
 
     if (error) {
       console.error('Error updating assessment:', error)
       throw error
     }
-    return data
+    return data!
   },
 
   // Delete assessment
@@ -122,35 +125,35 @@ export const taskHelpers = {
 
   // Create new task
   async createTask(task: Omit<Task, 'id' | 'user_id' | 'created_at' | 'updated_at'>, userId: string): Promise<Task> {
-    
-    const { data, error } = await supabase
-      .from('tasks')
-      .insert({ ...task, user_id: userId })
-      .select()
-      .single()
+    const { data, error } = await safeInsertSingle(
+      supabase
+        .from('tasks')
+        .insert({ ...task, user_id: userId })
+        .select()
+    )
 
     if (error) {
       console.error('Error creating task:', error)
       throw error
     }
-    return data
+    return data!
   },
 
   // Update task
   async updateTask(id: string, updates: Partial<Task>): Promise<Task> {
-    
-    const { data, error } = await supabase
-      .from('tasks')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single()
+    const { data, error } = await safeUpdateSingle(
+      supabase
+        .from('tasks')
+        .update(updates)
+        .eq('id', id)
+        .select()
+    )
 
     if (error) {
       console.error('Error updating task:', error)
       throw error
     }
-    return data
+    return data!
   },
 
   // Delete task
@@ -169,29 +172,37 @@ export const taskHelpers = {
 
   // Toggle task completion
   async toggleTaskCompletion(id: string): Promise<Task> {
-    
-    // First get current task
-    const { data: currentTask, error: fetchError } = await supabase
-      .from('tasks')
-      .select('completed')
-      .eq('id', id)
-      .single()
+    try {
+      // First get current task without .single() to avoid 406 errors
+      const { data: tasks, error: fetchError } = await supabase
+        .from('tasks')
+        .select('completed')
+        .eq('id', id)
 
-    if (fetchError) throw fetchError
+      if (fetchError || !tasks || tasks.length === 0) {
+        console.error('Error fetching task or task not found:', fetchError)
+        throw new Error('Task not found')
+      }
 
-    // Toggle completion
-    const { data, error } = await supabase
-      .from('tasks')
-      .update({ completed: !currentTask.completed })
-      .eq('id', id)
-      .select()
-      .single()
+      const currentTask = tasks[0]
 
-    if (error) {
-      console.error('Error toggling task completion:', error)
+      // Toggle completion
+      const { data: updatedTasks, error } = await supabase
+        .from('tasks')
+        .update({ completed: !currentTask.completed })
+        .eq('id', id)
+        .select()
+
+      if (error || !updatedTasks || updatedTasks.length === 0) {
+        console.error('Error toggling task completion:', error)
+        throw error || new Error('Failed to update task')
+      }
+      
+      return updatedTasks[0]
+    } catch (error) {
+      console.error('Error in toggleTaskCompletion:', error)
       throw error
     }
-    return data
   }
 }
 
@@ -229,15 +240,15 @@ export const progressHelpers = {
 
   // Create or update progress metric
   async upsertProgressMetric(metric: Omit<ProgressMetric, 'id' | 'created_at'>): Promise<ProgressMetric> {
-    
-    const { data, error } = await supabase
-      .from('progress_metrics')
-      .upsert(metric)
-      .select()
-      .single()
+    const { data, error } = await safeInsertSingle(
+      supabase
+        .from('progress_metrics')
+        .upsert(metric)
+        .select()
+    )
 
     if (error) throw error
-    return data
+    return data!
   }
 }
 
@@ -260,29 +271,29 @@ export const plannerHelpers = {
 
   // Create new planner session
   async createPlannerSession(session: Omit<PlannerSession, 'id' | 'user_id' | 'created_at' | 'updated_at'>, userId: string): Promise<PlannerSession> {
-    
-    const { data, error } = await supabase
-      .from('planner_sessions')
-      .insert({ ...session, user_id: userId })
-      .select()
-      .single()
+    const { data, error } = await safeInsertSingle(
+      supabase
+        .from('planner_sessions')
+        .insert({ ...session, user_id: userId })
+        .select()
+    )
 
     if (error) throw error
-    return data
+    return data!
   },
 
   // Update planner session
   async updatePlannerSession(id: string, updates: Partial<PlannerSession>): Promise<PlannerSession> {
-    
-    const { data, error } = await supabase
-      .from('planner_sessions')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single()
+    const { data, error } = await safeUpdateSingle(
+      supabase
+        .from('planner_sessions')
+        .update(updates)
+        .eq('id', id)
+        .select()
+    )
 
     if (error) throw error
-    return data
+    return data!
   },
 
   // Delete planner session
@@ -315,15 +326,15 @@ export const subjectHelpers = {
 
   // Create new subject
   async createSubject(subject: Omit<Subject, 'id' | 'user_id' | 'created_at'>, userId: string): Promise<Subject> {
-    
-    const { data, error } = await supabase
-      .from('subjects')
-      .insert({ ...subject, user_id: userId })
-      .select()
-      .single()
+    const { data, error } = await safeInsertSingle(
+      supabase
+        .from('subjects')
+        .insert({ ...subject, user_id: userId })
+        .select()
+    )
 
     if (error) throw error
-    return data
+    return data!
   }
 }
 
@@ -331,30 +342,36 @@ export const subjectHelpers = {
 export const profileHelpers = {
   // Get user profile
   async getUserProfile(userId: string): Promise<Profile | null> {
-    if (!isSupabaseConfigured) {
+    try {
+      // First try to get profiles without .single() to avoid 406 errors
+      const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+
+      if (error) {
+        console.error('Error fetching profile:', error)
+        return null
+      }
+
+      // Return the first profile if it exists
+      return profiles && profiles.length > 0 ? profiles[0] : null
+    } catch (error) {
+      console.error('Error in getUserProfile:', error)
       return null
     }
-
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
-
-    if (error && error.code !== 'PGRST116') throw error
-    return data || null
   },
 
   // Create or update profile
   async upsertProfile(profile: Omit<Profile, 'created_at' | 'updated_at'>): Promise<Profile> {
-    
-    const { data, error } = await supabase
-      .from('profiles')
-      .upsert(profile)
-      .select()
-      .single()
+    const { data, error } = await safeInsertSingle(
+      supabase
+        .from('profiles')
+        .upsert(profile)
+        .select()
+    )
 
     if (error) throw error
-    return data
+    return data!
   }
 }

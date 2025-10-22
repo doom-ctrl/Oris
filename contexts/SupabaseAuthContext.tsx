@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { createBrowserSupabaseClient } from '@/lib/supabase-client'
+import { safeSingle } from '@/lib/supabase-utils'
 import type { Profile } from '@/types/database'
 
 interface AuthContextType {
@@ -30,20 +31,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const { data, error } = await supabase
+      // First check if profile exists without .single()
+      const { data: profiles, error: fetchError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single()
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching profile:', error)
+      if (fetchError) {
+        console.error('Error fetching profile:', fetchError)
         setProfile(null)
+        return
+      }
+
+      // If no profile exists, create one
+      if (!profiles || profiles.length === 0) {
+        const { data: newProfile, error: createError } = await safeSingle(
+          supabase
+            .from('profiles')
+            .insert({
+              id: user.id,
+              email: user.email,
+              full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+              avatar_url: user.user_metadata?.avatar_url || null
+            })
+            .select()
+        )
+
+        if (createError) {
+          console.error('Error creating profile:', createError)
+          setProfile(null)
+        } else {
+          setProfile(newProfile)
+        }
       } else {
-        setProfile(data)
+        // Profile exists, use the first one
+        setProfile(profiles[0])
       }
     } catch (error) {
-      console.error('Error fetching profile:', error)
+      console.error('Error in refreshProfile:', error)
       setProfile(null)
     }
   }
