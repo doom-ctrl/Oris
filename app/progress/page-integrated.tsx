@@ -3,7 +3,16 @@
 import { useState, useEffect, useMemo } from "react"
 import { motion } from "framer-motion"
 import { useAuth } from "@/contexts/SupabaseAuthContext"
-import { TrendingUp, Calendar, BookOpen, CheckCircle, Activity, Award, Target, BarChart3 } from "lucide-react"
+import {
+  TrendingUp,
+  Calendar,
+  BookOpen,
+  CheckCircle,
+  Activity,
+  Award,
+  Target,
+  BarChart3
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -37,6 +46,17 @@ interface ActivityItem {
 }
 
 type DateRange = "week" | "month" | "term"
+type SessionType = "study" | "review" | "break" | "assignment" | "project"
+
+interface NewSession {
+  title: string
+  type: SessionType
+  date: string
+  startTime: string
+  endTime: string
+  description: string
+  linkedAssessment: string
+}
 
 export default function ProgressPageIntegrated() {
   const { user } = useAuth()
@@ -47,6 +67,17 @@ export default function ProgressPageIntegrated() {
   const [plannerSessions, setPlannerSessions] = useState<PlannerSession[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
+  // ✅ FIXED: explicit type union for newSession
+  const [newSession, setNewSession] = useState<NewSession>({
+    title: "",
+    type: "study",
+    date: "",
+    startTime: "",
+    endTime: "",
+    description: "",
+    linkedAssessment: ""
+  })
+
   // Fetch data from Supabase
   useEffect(() => {
     if (!user) return
@@ -54,7 +85,6 @@ export default function ProgressPageIntegrated() {
     const fetchData = async () => {
       try {
         setIsLoading(true)
-
         const [assessmentsData, metricsData, sessionsData] = await Promise.all([
           assessmentHelpers.getUserAssessments(user.id),
           progressHelpers.getProgressMetrics(
@@ -86,7 +116,6 @@ export default function ProgressPageIntegrated() {
   const getDateRangeStart = (range: DateRange): string => {
     const today = new Date()
     const start = new Date(today)
-
     switch (range) {
       case "week":
         start.setDate(today.getDate() - 7)
@@ -98,7 +127,6 @@ export default function ProgressPageIntegrated() {
         start.setMonth(today.getMonth() - 3)
         break
     }
-
     return start.toISOString().split("T")[0]
   }
 
@@ -125,10 +153,11 @@ export default function ProgressPageIntegrated() {
     const overallCompletion = Math.round(totalProgress / totalAssessments)
     const tasksCompleted = progressMetrics.reduce((sum, m) => sum + m.tasks_completed, 0)
     const uniqueSubjects = new Set(assessments.map(a => a.subject))
-    const completionChange = progressMetrics.length >= 2
-      ? progressMetrics[progressMetrics.length - 1].overall_completion -
-        progressMetrics[progressMetrics.length - 2].overall_completion
-      : 0
+    const completionChange =
+      progressMetrics.length >= 2
+        ? progressMetrics[progressMetrics.length - 1].overall_completion -
+          progressMetrics[progressMetrics.length - 2].overall_completion
+        : 0
 
     return {
       overallCompletion,
@@ -136,7 +165,12 @@ export default function ProgressPageIntegrated() {
       assessmentsCompleted: completedAssessments,
       tasksCompleted,
       activeSubjects: uniqueSubjects.size,
-      weeklyTrend: completionChange > 0 ? "up" as const : completionChange < 0 ? "down" as const : "stable" as const
+      weeklyTrend:
+        completionChange > 0
+          ? ("up" as const)
+          : completionChange < 0
+          ? ("down" as const)
+          : ("stable" as const)
     }
   }, [assessments, progressMetrics])
 
@@ -159,15 +193,17 @@ export default function ProgressPageIntegrated() {
       const subject = subjectMap.get(assessment.subject)!
       subject.totalAssessments++
       subject.completion += assessment.progress
-
-      if (assessment.status === "completed") {
-        subject.completedAssessments++
-      }
+      if (assessment.status === "completed") subject.completedAssessments++
     })
 
     subjectMap.forEach(subject => {
       subject.completion = Math.round(subject.completion / subject.totalAssessments)
-      subject.trend = subject.completion >= 80 ? "up" : subject.completion >= 60 ? "stable" : "down"
+      subject.trend =
+        subject.completion >= 80
+          ? "up"
+          : subject.completion >= 60
+          ? "stable"
+          : "down"
       subject.trendValue = Math.random() * 20 - 10
     })
 
@@ -192,17 +228,15 @@ export default function ProgressPageIntegrated() {
         })
       })
 
-    plannerSessions
-      .slice(-3)
-      .forEach(session => {
-        activities.push({
-          id: session.id,
-          type: session.type === "milestone" ? "milestone" : "task",
-          title: session.title,
-          description: session.type,
-          timestamp: `${Math.floor(Math.random() * 24) + 1} hours ago`
-        })
+    plannerSessions.slice(-3).forEach(session => {
+      activities.push({
+        id: session.id,
+        type: session.type === "milestone" ? "milestone" : "task",
+        title: session.title,
+        description: session.type,
+        timestamp: `${Math.floor(Math.random() * 24) + 1} hours ago`
       })
+    })
 
     return activities.sort((a, b) => parseInt(a.timestamp) - parseInt(b.timestamp)).slice(0, 4)
   }, [assessments, plannerSessions])
@@ -210,16 +244,20 @@ export default function ProgressPageIntegrated() {
   // Filter subjects
   const filteredSubjectData = useMemo(() => {
     if (selectedSubject === "all") return subjectData
-    return subjectData.filter(subject => subject.name.toLowerCase().includes(selectedSubject.toLowerCase()))
+    return subjectData.filter(subject =>
+      subject.name.toLowerCase().includes(selectedSubject.toLowerCase())
+    )
   }, [subjectData, selectedSubject])
 
   // Trend color helper
   const getTrendColor = (trend: "up" | "down" | "stable") => {
     switch (trend) {
-      case "up": return "text-green-600 dark:text-green-400"
-      case "down": return "text-red-600 dark:text-red-400"
-      case "stable": return "text-muted-foreground"
-      default: return "text-muted-foreground"
+      case "up":
+        return "text-green-600 dark:text-green-400"
+      case "down":
+        return "text-red-600 dark:text-red-400"
+      default:
+        return "text-muted-foreground"
     }
   }
 
@@ -228,7 +266,9 @@ export default function ProgressPageIntegrated() {
       <MotionWrapper>
         <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">Please sign in to view your progress</h1>
+            <h1 className="text-2xl font-bold mb-4">
+              Please sign in to view your progress
+            </h1>
             <Button asChild>
               <a href="/sign-in">Sign In</a>
             </Button>
@@ -254,7 +294,25 @@ export default function ProgressPageIntegrated() {
   return (
     <MotionWrapper>
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-        {/* ... (rest of UI unchanged) ... */}
+        {/* --- main dashboard sections go here --- */}
+
+        {/* ✅ FIXED select handler for session type */}
+        <select
+          value={newSession.type}
+          onChange={e =>
+            setNewSession(prev => ({
+              ...prev,
+              type: e.target.value as SessionType
+            }))
+          }
+          className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm"
+        >
+          <option value="study">Study Session</option>
+          <option value="review">Review</option>
+          <option value="break">Break</option>
+          <option value="assignment">Assignment</option>
+          <option value="project">Project</option>
+        </select>
 
         {/* Motivational Section */}
         {summaryMetrics.weeklyTrend === "up" && (
@@ -274,7 +332,8 @@ export default function ProgressPageIntegrated() {
                       Great work!
                     </h3>
                     <p className="text-green-700 dark:text-green-300">
-                      You&apos;ve improved {Math.abs(summaryMetrics.completionChange)}% this {dateRange}. Keep up the excellent momentum!
+                      You&apos;ve improved {Math.abs(summaryMetrics.completionChange)}% this{" "}
+                      {dateRange}. Keep up the excellent momentum!
                     </p>
                   </div>
                 </div>
