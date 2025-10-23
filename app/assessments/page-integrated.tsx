@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Search, Filter, ChevronLeft, Clock, CheckCircle, Circle, Calendar } from "lucide-react"
-import { useUser } from "@clerk/nextjs"
+import { useAuth } from "@/contexts/SupabaseAuthContext"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -39,7 +39,7 @@ interface LocalAssessment {
 type DateRange = "all" | "upcoming" | "completed"
 
 export default function AssessmentsPageIntegrated() {
-  const { user } = useUser()
+  const { user } = useAuth()
   const [assessments, setAssessments] = useState<LocalAssessment[]>([])
   const [selectedAssessment, setSelectedAssessment] = useState<LocalAssessment | null>(null)
   const [searchQuery, setSearchQuery] = useState("")

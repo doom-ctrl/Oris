@@ -212,7 +212,7 @@ For support and questions:
 - **Components**: shadcn/ui component library
 - **Animations**: Framer Motion for smooth transitions
 - **Icons**: Lucide React icon set
-- **Authentication**: Clerk for secure user management
+- **Authentication**: Supabase Auth for secure user management
 - **Database**: Supabase with Row Level Security (RLS)
 
 ## 🚀 Getting Started
@@ -220,8 +220,7 @@ For support and questions:
 ### Prerequisites
 - Node.js 18+
 - npm, yarn, pnpm, or bun
-- Clerk account (for authentication)
-- Supabase account (for database)
+- Supabase account (for authentication and database)
 
 ### Quick Setup
 

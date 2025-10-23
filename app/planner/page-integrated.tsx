@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useUser } from "@clerk/nextjs"
+import { useAuth } from "@/contexts/SupabaseAuthContext"
 import {
   ChevronLeft,
   ChevronRight,
@@ -41,7 +41,7 @@ interface DayCell {
 interface CalendarEvent {
   id: string
   title: string
-  type: "assessment" | "study" | "milestone"
+  type: "assessment" | "study" | "milestone" | "review"
   date: string
   startTime?: string
   endTime?: string
@@ -53,7 +53,7 @@ interface CalendarEvent {
 type ViewMode = "week" | "month"
 
 export default function PlannerPageIntegrated() {
-  const { user } = useUser()
+  const { user } = useAuth()
   const [currentDate, setCurrentDate] = useState(new Date())
   const [viewMode, setViewMode] = useState<ViewMode>("week")
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
@@ -262,7 +262,8 @@ export default function PlannerPageIntegrated() {
         start_time: newSession.startTime || undefined,
         end_time: newSession.endTime || undefined,
         description: newSession.description,
-        linked_assessment_id: newSession.linkedAssessment || undefined
+        linked_assessment_id: newSession.linkedAssessment || undefined,
+        is_completed: false
       }, user.id)
 
       setPlannerSessions(prev => [...prev, session])

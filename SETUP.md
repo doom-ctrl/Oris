@@ -1,6 +1,6 @@
-# Setup Guide: Assessment Manager with Clerk + Supabase
+# Setup Guide: Assessment Manager with Supabase
 
-This guide will help you set up the Assessment Manager with secure authentication (Clerk) and database storage (Supabase).
+This guide will help you set up the Assessment Manager with Supabase for authentication and database storage.
 
 ## 🚀 Quick Start
 
@@ -14,46 +14,15 @@ npm install
 
 ### 2. Environment Setup
 
-```bash
-cp .env.local.example .env.local
-```
+Create a `.env.local` file in the root directory with your Supabase credentials.
 
-### 3. Configure Services
+### 3. Configure Supabase
 
-Follow the steps below to set up Clerk and Supabase, then update your `.env.local` file.
+Follow the steps below to set up Supabase, then update your `.env.local` file.
 
 ---
 
-## 🔐 Clerk Authentication Setup
-
-### Step 1: Create Clerk Application
-
-1. Go to [Clerk Dashboard](https://dashboard.clerk.com/)
-2. Sign up / Sign in
-3. Click "Add application"
-4. Choose a name (e.g., "Assessment Manager")
-5. Select authentication methods (recommend: Email + Password, Google, GitHub)
-6. Copy your keys
-
-### Step 2: Add Clerk Keys to Environment
-
-Add these to your `.env.local` file:
-
-```env
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxxxxxxxxxxxxxxxxxxxx
-CLERK_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxx
-```
-
-### Step 3: Configure Redirect URLs
-
-In Clerk Dashboard → Sessions & URLs:
-- **Redirect after sign-in**: `/assessments`
-- **Redirect after sign-up**: `/assessments`
-- **Sign-out URL**: `/`
-
----
-
-## 🗄️ Supabase Database Setup
+## 🗄️ Supabase Setup
 
 ### Step 1: Create Supabase Project
 
@@ -62,207 +31,112 @@ In Clerk Dashboard → Sessions & URLs:
 3. Choose your organization
 4. Enter project details:
    - **Name**: Assessment Manager
-   - **Database Password**: Create a strong password
-   - **Region**: Choose closest to your users
-5. Wait for project to be created
+   - **Database Password**: Choose a strong password
+   - **Region**: Select closest to your users
+5. Wait for project creation (2-3 minutes)
 
-### Step 2: Get Supabase Keys
+### Step 2: Get Your Supabase Keys
 
-In your Supabase project → Settings → API:
-- Copy **Project URL** and **anon public** key
-- Add to `.env.local`:
+1. Go to **Settings** → **API**
+2. Copy the following values:
+   - **Project URL**
+   - **anon/public key**
+   - **service_role key** (keep this secret!)
+
+### Step 3: Add Supabase Keys to Environment
+
+Create/update your `.env.local` file:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
-### Step 3: Set Up Database Schema
+### Step 4: Set Up Database Schema
 
-1. In Supabase → SQL Editor
-2. Copy and paste the entire contents of `database/schema-clerk-compatible.sql`
-3. Click "Run" to execute all tables, policies, and indexes
+1. Go to **SQL Editor** in your Supabase dashboard
+2. Run the contents of `database/schema-supabase-auth.sql`
+3. Verify all tables are created successfully
 
-**⚠️ Important**: Use the `schema-clerk-compatible.sql` file as it's designed for Clerk user IDs (TEXT format). If you have an existing database with the old UUID schema, run `database/migrate-to-clerk.sql` first.
+### Step 5: Configure Authentication
 
-This will create:
-- `profiles` table (linked to Clerk users)
-- `assessments` table
-- `tasks` table
-- `progress_metrics` table
-- `planner_sessions` table
-- `subjects` table
-- `study_sessions` table
-- Row Level Security policies
-- Performance indexes
-
-### Step 4: Configure Clerk Auth Provider
-
-1. In Supabase → Authentication → Providers
-2. Enable "JWT" provider
-3. In "JWT Secret", add your Clerk JWKS URL:
-   ```
-   https://your-clerk-instance.clerk.accounts.dev/v1/jwks
-   ```
-
----
-
-## 🚀 Run the Application
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000)
-
-## 📋 Verification Checklist
-
-- [ ] Clerk keys added to `.env.local`
-- [ ] Supabase keys added to `.env.local`
-- [ ] Database schema executed in Supabase
-- [ ] Clerk JWT provider configured in Supabase
-- [ ] Application starts without errors
-- [ ] Sign up / Sign in works
-- [ ] Can create assessments
-- [ ] Data persists in Supabase
-
----
-
-## 🔧 Development Workflow
-
-### Authentication Flow
-
-1. User visits `/` → Sees landing page
-2. Clicks "Sign Up" → Redirected to Clerk signup
-3. After signup → Redirected to `/assessments`
-4. User profile automatically created in Supabase `profiles` table
-5. All subsequent data operations use Row Level Security
-
-### Data Flow
-
-- All database operations use the `databaseHelpers.ts` functions
-- Each function includes the user's Clerk ID for filtering
-- Row Level Security ensures users can only access their own data
-- Client-side uses the `useUser()` hook from Clerk
-
-### Adding New Features
-
-1. **New Table**: Add to `database/schema.sql`
-2. **Type Definitions**: Add to `types/database.ts`
-3. **Helper Functions**: Add to `lib/databaseHelpers.ts`
-4. **UI Components**: Use authentication-aware patterns
+1. Go to **Authentication** → **Settings**
+2. Configure your site URL:
+   - **Site URL**: `http://localhost:3000` (for development)
+   - **Redirect URLs**: Add `http://localhost:3000/auth/callback`
+3. Enable email confirmations if desired
+4. Configure any OAuth providers you want to use
 
 ---
 
 ## 🧪 Testing Your Setup
 
-### Test Authentication
+### 1. Start Development Server
 
 ```bash
-# Navigate to auth pages
-http://localhost:3000/sign-in
-http://localhost:3000/sign-up
+npm run dev
 ```
 
-### Test Database Operations
+### 2. Test Authentication
 
-1. Sign in successfully
-2. Create an assessment
-3. Add tasks to assessment
-4. Check data appears in Supabase Dashboard
-5. Sign out and sign in as different user
-6. Verify data isolation (users shouldn't see each other's data)
+1. Open http://localhost:3000
+2. Click "Sign Up" and create an account
+3. Verify you're redirected to `/assessments`
+4. Test sign out and sign in flow
 
-### Test Row Level Security
+### 3. Test CRUD Operations
 
-In Supabase SQL Editor, run:
+1. **Create Assessment**: Add your first assessment
+2. **Add Tasks**: Create tasks for the assessment
+3. **Complete Tasks**: Mark tasks as complete
+4. **Check Progress**: Verify progress updates
+5. **View Planner**: Check assessment appears on calendar
 
-```sql
--- This should return rows (you're authenticated via Dashboard)
-SELECT * FROM assessments;
+### 4. Test Data Isolation
 
--- Try to access another user's data (should be blocked)
-SELECT * FROM profiles WHERE email = 'different@example.com';
-```
+1. Sign out and create a different user account
+2. Verify you cannot see the first user's data
+3. Create new data for the second user
+4. Switch back to first user - verify their data is intact
 
 ---
 
-## 🚨 Troubleshooting
+## 🚀 Deployment
 
-### Common Issues
+### Environment Variables for Production
 
-**1. Authentication Redirect Loop**
-- Check Clerk keys in `.env.local`
-- Verify redirect URLs in Clerk Dashboard
-- Ensure middleware is properly configured
-
-**2. Database Connection Error**
-- Verify Supabase URL and keys
-- Check Supabase project status
-- Ensure database schema was executed
-
-**3. Row Level Security Issues**
-- Verify JWT provider is configured in Supabase
-- Check RLS policies are enabled
-- Test with authenticated session
-
-**4. CORS Issues**
-- Add your local development URL to Supabase CORS settings
-- Check middleware configuration
-
-### Debug Mode
-
-Add this to your components for debugging:
-
-```tsx
-import { useUser } from '@clerk/nextjs'
-
-function DebugInfo() {
-  const { user, isLoaded } = useUser()
-
-  console.log('User:', user)
-  console.log('Is Loaded:', isLoaded)
-
-  return null
-}
-```
-
----
-
-## 🚀 Production Deployment
-
-### Environment Variables
-
-Set these in your hosting provider:
+Update your environment variables for production:
 
 ```env
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_xxxxx
-CLERK_SECRET_KEY=sk_live_xxxxx
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+# Production Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_production_service_role_key
 ```
 
 ### Vercel Deployment
 
 1. Connect your repository to Vercel
 2. Add environment variables in Vercel Dashboard
-3. Update Clerk redirect URLs to your Vercel domain
+3. Update Supabase redirect URLs to your Vercel domain
 4. Deploy!
 
 ### Security Considerations
 
-- Use production keys (sk_live_, pk_live_)
-- Enable rate limiting in Clerk
-- Set up CORS properly in Supabase
-- Monitor usage in both dashboards
+- Keep your service role key secret
+- Set up proper CORS in Supabase
+- Enable Row Level Security (RLS) policies
+- Monitor usage in Supabase dashboard
+- Use production URLs for production deployment
 
 ---
 
 ## 📚 Additional Resources
 
-- [Clerk Documentation](https://clerk.com/docs)
 - [Supabase Documentation](https://supabase.com/docs)
+- [Supabase Auth Guide](https://supabase.com/docs/guides/auth)
 - [Next.js App Router](https://nextjs.org/docs/app)
 - [Row Level Security Guide](https://supabase.com/docs/guides/auth/row-level-security)
 

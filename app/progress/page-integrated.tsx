@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useUser } from "@clerk/nextjs"
+import { useAuth } from "@/contexts/SupabaseAuthContext"
 import { TrendingUp, Calendar, BookOpen, CheckCircle, Activity, Award, Target, BarChart3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -40,7 +40,7 @@ interface ActivityItem {
 type DateRange = "week" | "month" | "term"
 
 export default function ProgressPageIntegrated() {
-  const { user } = useUser()
+  const { user } = useAuth()
   const [dateRange, setDateRange] = useState<DateRange>("week")
   const [selectedSubject, setSelectedSubject] = useState<string>("all")
   const [assessments, setAssessments] = useState<Assessment[]>([])

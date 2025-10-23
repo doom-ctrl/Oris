@@ -21,10 +21,8 @@ if (!fs.existsSync(envPath)) {
 // Load environment variables
 require('dotenv').config({ path: envPath });
 
-// Check required environment variables
+// Required environment variables
 const requiredEnvVars = [
-  'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
-  'CLERK_SECRET_KEY',
   'NEXT_PUBLIC_SUPABASE_URL',
   'NEXT_PUBLIC_SUPABASE_ANON_KEY'
 ];
@@ -59,19 +57,11 @@ try {
   console.log('❌ Error testing Supabase connection:', error.message);
 }
 
-// Test Clerk configuration
-console.log('\n🔐 Testing Clerk configuration...');
-try {
-  console.log('✅ Clerk configuration detected');
-  console.log(`   - Publishable Key: ${process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.substring(0, 10)}...`);
-  console.log(`   - Secret Key: ${process.env.CLERK_SECRET_KEY.substring(0, 10)}...`);
-} catch (error) {
-  console.log('❌ Error testing Clerk configuration:', error.message);
-}
+// Configuration test complete
 
 console.log('\n📋 Next Steps:');
 console.log('1. Make sure you have created a Supabase project');
-console.log('2. Run the database schema from database/schema.sql in Supabase');
+console.log('2. Run the database schema from database/schema-supabase-auth.sql in Supabase');
 console.log('3. Start the development server: npm run dev');
 console.log('4. Open http://localhost:3000 and test sign up/sign in');
 console.log('5. Create your first assessment and verify it saves to Supabase');

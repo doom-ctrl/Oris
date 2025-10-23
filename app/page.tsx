@@ -39,8 +39,8 @@ const setupSteps = [
   },
   {
     icon: Shield,
-    title: "Configure Clerk",
-    description: "Create a Clerk application and add your authentication keys to the environment variables."
+    title: "Configure Authentication",
+    description: "Set up Supabase authentication and configure your environment variables for secure access."
   },
   {
     icon: CheckCircle,
@@ -234,7 +234,7 @@ export default function Home() {
                       cp .env.local.example .env.local
                     </code>
                     <p className="text-sm text-muted-foreground mt-4">
-                      Then add your Clerk and Supabase credentials to <code>.env.local</code>
+                      Then add your Supabase credentials to <code>.env.local</code>
                     </p>
                   </CardContent>
                 </Card>

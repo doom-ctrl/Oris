@@ -144,7 +144,7 @@ export interface LocalAssessment {
 export interface LocalCalendarEvent {
   id: string
   title: string
-  type: "assessment" | "study" | "milestone"
+  type: "assessment" | "study" | "milestone" | "review"
   date: string
   startTime?: string
   endTime?: string

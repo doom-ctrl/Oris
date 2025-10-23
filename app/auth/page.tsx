@@ -127,7 +127,6 @@ export default function AuthPage() {
                   loading_button_label: 'Signing in...',
                   social_provider_text: 'Sign in with {{provider}}',
                   link_text: "Already have an account? Sign in",
-                  forgot_password_text: 'Forgot your password?',
                 },
                 sign_up: {
                   email_label: 'Email address',

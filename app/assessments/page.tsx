@@ -264,7 +264,9 @@ function AssessmentsPage() {
       // Create task in database
       const newTask = await taskHelpers.createTask({
         title: taskTitle,
-        assessment_id: assessmentId
+        assessment_id: assessmentId,
+        completed: false,
+        priority: 'medium'
       }, user.id)
 
       // Update local state
@@ -303,7 +305,10 @@ function AssessmentsPage() {
         title: newAssessment.title,
         subject: newAssessment.subject,
         description: newAssessment.description,
-        due_date: newAssessment.dueDate
+        due_date: newAssessment.dueDate,
+        status: 'upcoming',
+        progress: 0,
+        priority: 'medium'
       }, user.id)
 
       const localAssessment: LocalAssessment = {
@@ -311,7 +316,7 @@ function AssessmentsPage() {
         title: assessment.title,
         subject: assessment.subject,
         description: assessment.description || "",
-        dueDate: assessment.due_date,
+        dueDate: assessment.due_date || "",
         status: "upcoming",
         progress: 0,
         tasks: []
