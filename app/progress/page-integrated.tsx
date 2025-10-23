@@ -25,26 +25,7 @@ import {
 } from "@/lib/databaseHelpers"
 import type { Assessment, ProgressMetric, PlannerSession } from "@/types/database"
 
-// Subject data interface
-interface SubjectData {
-  name: string
-  completion: number
-  totalAssessments: number
-  completedAssessments: number
-  trend: "up" | "down" | "stable"
-  trendValue: number
-}
-
-// Activity item interface
-interface ActivityItem {
-  id: string
-  type: "assessment" | "task" | "milestone"
-  title: string
-  description: string
-  timestamp: string
-  value?: number
-}
-
+// Type definitions
 type DateRange = "week" | "month" | "term"
 type SessionType = "study" | "review" | "break" | "assignment" | "project"
 
@@ -58,6 +39,24 @@ interface NewSession {
   linkedAssessment: string
 }
 
+interface SubjectData {
+  name: string
+  completion: number
+  totalAssessments: number
+  completedAssessments: number
+  trend: "up" | "down" | "stable"
+  trendValue: number
+}
+
+interface ActivityItem {
+  id: string
+  type: "assessment" | "task" | "milestone"
+  title: string
+  description: string
+  timestamp: string
+  value?: number
+}
+
 export default function ProgressPageIntegrated() {
   const { user } = useAuth()
   const [dateRange, setDateRange] = useState<DateRange>("week")
@@ -67,7 +66,7 @@ export default function ProgressPageIntegrated() {
   const [plannerSessions, setPlannerSessions] = useState<PlannerSession[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // ✅ FIXED: explicit type union for newSession
+  // ✅ Explicitly typed newSession (fix for Vercel)
   const [newSession, setNewSession] = useState<NewSession>({
     title: "",
     type: "study",
@@ -78,7 +77,7 @@ export default function ProgressPageIntegrated() {
     linkedAssessment: ""
   })
 
-  // Fetch data from Supabase
+  // Data fetching
   useEffect(() => {
     if (!user) return
 
@@ -98,7 +97,6 @@ export default function ProgressPageIntegrated() {
             getDateRangeEnd(dateRange)
           )
         ])
-
         setAssessments(assessmentsData)
         setProgressMetrics(metricsData)
         setPlannerSessions(sessionsData)
@@ -130,9 +128,7 @@ export default function ProgressPageIntegrated() {
     return start.toISOString().split("T")[0]
   }
 
-  const getDateRangeEnd = (): string => {
-    return new Date().toISOString().split("T")[0]
-  }
+  const getDateRangeEnd = (): string => new Date().toISOString().split("T")[0]
 
   // Summary metrics
   const summaryMetrics = useMemo(() => {
@@ -167,98 +163,20 @@ export default function ProgressPageIntegrated() {
       activeSubjects: uniqueSubjects.size,
       weeklyTrend:
         completionChange > 0
-          ? ("up" as const)
+          ? "up"
           : completionChange < 0
-          ? ("down" as const)
-          : ("stable" as const)
+          ? "down"
+          : "stable"
     }
   }, [assessments, progressMetrics])
 
-  // Subject data
-  const subjectData = useMemo(() => {
-    const subjectMap = new Map<string, SubjectData>()
-
-    assessments.forEach(assessment => {
-      if (!subjectMap.has(assessment.subject)) {
-        subjectMap.set(assessment.subject, {
-          name: assessment.subject,
-          completion: 0,
-          totalAssessments: 0,
-          completedAssessments: 0,
-          trend: "stable",
-          trendValue: 0
-        })
-      }
-
-      const subject = subjectMap.get(assessment.subject)!
-      subject.totalAssessments++
-      subject.completion += assessment.progress
-      if (assessment.status === "completed") subject.completedAssessments++
-    })
-
-    subjectMap.forEach(subject => {
-      subject.completion = Math.round(subject.completion / subject.totalAssessments)
-      subject.trend =
-        subject.completion >= 80
-          ? "up"
-          : subject.completion >= 60
-          ? "stable"
-          : "down"
-      subject.trendValue = Math.random() * 20 - 10
-    })
-
-    return Array.from(subjectMap.values())
-  }, [assessments])
-
-  // Recent activity
-  const recentActivity: ActivityItem[] = useMemo(() => {
-    const activities: ActivityItem[] = []
-
-    assessments
-      .filter(a => a.status === "completed")
-      .slice(-3)
-      .forEach(assessment => {
-        activities.push({
-          id: assessment.id,
-          type: "assessment",
-          title: assessment.title,
-          description: assessment.subject,
-          timestamp: `${Math.floor(Math.random() * 7) + 1} hours ago`,
-          value: 100
-        })
-      })
-
-    plannerSessions.slice(-3).forEach(session => {
-      activities.push({
-        id: session.id,
-        type: session.type === "milestone" ? "milestone" : "task",
-        title: session.title,
-        description: session.type,
-        timestamp: `${Math.floor(Math.random() * 24) + 1} hours ago`
-      })
-    })
-
-    return activities.sort((a, b) => parseInt(a.timestamp) - parseInt(b.timestamp)).slice(0, 4)
-  }, [assessments, plannerSessions])
-
-  // Filter subjects
-  const filteredSubjectData = useMemo(() => {
-    if (selectedSubject === "all") return subjectData
-    return subjectData.filter(subject =>
-      subject.name.toLowerCase().includes(selectedSubject.toLowerCase())
-    )
-  }, [subjectData, selectedSubject])
-
-  // Trend color helper
-  const getTrendColor = (trend: "up" | "down" | "stable") => {
-    switch (trend) {
-      case "up":
-        return "text-green-600 dark:text-green-400"
-      case "down":
-        return "text-red-600 dark:text-red-400"
-      default:
-        return "text-muted-foreground"
-    }
+  // Select handler ✅ (typed cleanly)
+  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedType = e.target.value as SessionType
+    setNewSession(prev => ({
+      ...prev,
+      type: selectedType
+    }))
   }
 
   if (!user) {
@@ -293,18 +211,11 @@ export default function ProgressPageIntegrated() {
 
   return (
     <MotionWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-        {/* --- main dashboard sections go here --- */}
-
-        {/* ✅ FIXED select handler for session type */}
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6 space-y-6">
+        {/* Session Type Selector (fixed typing) */}
         <select
           value={newSession.type}
-          onChange={e =>
-            setNewSession(prev => ({
-              ...prev,
-              type: e.target.value as SessionType
-            }))
-          }
+          onChange={handleTypeChange}
           className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm"
         >
           <option value="study">Study Session</option>
@@ -332,7 +243,8 @@ export default function ProgressPageIntegrated() {
                       Great work!
                     </h3>
                     <p className="text-green-700 dark:text-green-300">
-                      You&apos;ve improved {Math.abs(summaryMetrics.completionChange)}% this{" "}
+                      You&apos;ve improved{" "}
+                      {Math.abs(summaryMetrics.completionChange)}% this{" "}
                       {dateRange}. Keep up the excellent momentum!
                     </p>
                   </div>
