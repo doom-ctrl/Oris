@@ -1,22 +1,20 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useAuth } from "@/contexts/SupabaseAuthContext"
 import {
-  TrendingUp,
-  Calendar,
+  Award,
   BookOpen,
   CheckCircle,
   Activity,
-  Award,
   Target,
+  Calendar,
+  TrendingUp,
   BarChart3
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 import { MotionWrapper } from "@/components/motion/MotionWrapper"
 import {
   assessmentHelpers,
@@ -25,9 +23,9 @@ import {
 } from "@/lib/databaseHelpers"
 import type { Assessment, ProgressMetric, PlannerSession } from "@/types/database"
 
-// -------------------------
-// ✅ Type definitions
-// -------------------------
+// --------------------------------------------------
+// ✅ Types
+// --------------------------------------------------
 type DateRange = "week" | "month" | "term"
 type SessionType = "study" | "review" | "break" | "assignment" | "project"
 
@@ -41,6 +39,9 @@ interface NewSession {
   linkedAssessment: string
 }
 
+// --------------------------------------------------
+// ✅ Component
+// --------------------------------------------------
 export default function PlannerPageIntegrated() {
   const { user } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
@@ -49,7 +50,7 @@ export default function PlannerPageIntegrated() {
   const [plannerSessions, setPlannerSessions] = useState<PlannerSession[]>([])
   const [dateRange, setDateRange] = useState<DateRange>("week")
 
-  // ✅ Explicitly typed session to allow all session types
+  // ✅ Explicit type annotation fixes the “not assignable” error
   const [newSession, setNewSession] = useState<NewSession>({
     title: "",
     type: "study",
@@ -60,9 +61,9 @@ export default function PlannerPageIntegrated() {
     linkedAssessment: ""
   })
 
-  // -------------------------
+  // --------------------------------------------------
   // ✅ Fetch data from Supabase
-  // -------------------------
+  // --------------------------------------------------
   useEffect(() => {
     if (!user) return
 
@@ -95,9 +96,9 @@ export default function PlannerPageIntegrated() {
     fetchData()
   }, [user, dateRange])
 
-  // -------------------------
-  // ✅ Date range helpers
-  // -------------------------
+  // --------------------------------------------------
+  // ✅ Date helpers
+  // --------------------------------------------------
   const getDateRangeStart = (range: DateRange) => {
     const today = new Date()
     const start = new Date(today)
@@ -109,17 +110,17 @@ export default function PlannerPageIntegrated() {
 
   const getDateRangeEnd = () => new Date().toISOString().split("T")[0]
 
-  // -------------------------
-  // ✅ Handler for session type (fixes the build)
-  // -------------------------
+  // --------------------------------------------------
+  // ✅ Handlers
+  // --------------------------------------------------
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedType = e.target.value as SessionType
     setNewSession(prev => ({ ...prev, type: selectedType }))
   }
 
-  // -------------------------
-  // ✅ Loading and Auth Guards
-  // -------------------------
+  // --------------------------------------------------
+  // ✅ UI: Guards
+  // --------------------------------------------------
   if (!user) {
     return (
       <MotionWrapper>
@@ -128,7 +129,9 @@ export default function PlannerPageIntegrated() {
             <h1 className="text-2xl font-bold mb-4">
               Please sign in to view your planner
             </h1>
-            <Button asChild><a href="/sign-in">Sign In</a></Button>
+            <Button asChild>
+              <a href="/sign-in">Sign In</a>
+            </Button>
           </div>
         </div>
       </MotionWrapper>
@@ -140,7 +143,7 @@ export default function PlannerPageIntegrated() {
       <MotionWrapper>
         <div className="min-h-screen flex items-center justify-center bg-background">
           <div className="text-center">
-            <div className="animate-spin h-10 w-10 border-b-2 border-primary mx-auto mb-3 rounded-full"></div>
+            <div className="animate-spin h-10 w-10 border-b-2 border-primary mx-auto mb-3 rounded-full" />
             <p className="text-muted-foreground">Loading planner data...</p>
           </div>
         </div>
@@ -148,14 +151,16 @@ export default function PlannerPageIntegrated() {
     )
   }
 
-  // -------------------------
-  // ✅ Render UI
-  // -------------------------
+  // --------------------------------------------------
+  // ✅ UI: Main content
+  // --------------------------------------------------
   return (
     <MotionWrapper>
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6 space-y-6">
+        {/* Header */}
         <h2 className="text-lg font-semibold">Create New Session</h2>
 
+        {/* Session Type Selector */}
         <select
           value={newSession.type}
           onChange={handleTypeChange}
@@ -168,6 +173,7 @@ export default function PlannerPageIntegrated() {
           <option value="project">Project</option>
         </select>
 
+        {/* Motivational Card */}
         <Card className="mt-6 border-green-200 dark:border-green-800/50 bg-gradient-to-r from-green-50/50 to-transparent dark:from-green-950/20">
           <CardContent className="p-6 flex gap-4 items-center">
             <div className="p-3 rounded-full bg-green-500/10">
