@@ -77,13 +77,14 @@ export async function POST(request: NextRequest) {
           continue
         }
 
+        // Set default due date if not provided
         if (!parsedAssessment.due_date) {
           const futureDate = new Date()
           futureDate.setDate(futureDate.getDate() + 30)
           parsedAssessment.due_date = futureDate.toISOString().split('T')[0]
         }
 
-        // ✅ FIXED: Await the insert before passing to safeInsertSingle
+        // ✅ FIX 1: await Supabase insert before passing to safeInsertSingle
         const insertResult = await supabase
           .from('assessments')
           .insert([
@@ -98,13 +99,20 @@ export async function POST(request: NextRequest) {
           ])
           .select()
 
-        const { data: assessment, error: assessmentError } = await safeInsertSingle(insertResult)
+        const { data: insertedAssessments, error: assessmentError } =
+          await safeInsertSingle(insertResult)
+
+        // ✅ FIX 2: handle array response safely
+        const assessment = Array.isArray(insertedAssessments)
+          ? insertedAssessments[0]
+          : insertedAssessments
 
         if (assessmentError || !assessment) {
           console.error('Assessment creation error:', assessmentError)
           continue
         }
 
+        // Create tasks for the assessment
         const tasksToInsert = parsedAssessment.tasks.map(task => ({
           assessment_id: assessment.id,
           title: task.title,
@@ -122,6 +130,7 @@ export async function POST(request: NextRequest) {
         createdTasks.push(...(tasks || []))
       }
 
+      // If no assessments were created, fall back
       if (createdAssessments.length === 0) {
         throw new Error('No valid assessments could be created from smart parsing')
       }
@@ -129,7 +138,7 @@ export async function POST(request: NextRequest) {
       console.error('Smart parsing failed:', aiError)
 
       if (useFallback) {
-        // Fallback assessment
+        // Create fallback assessment using the old method
         const fallbackAssessment = createFallbackAssessment(text.trim())
 
         const insertResult = await supabase
@@ -146,7 +155,11 @@ export async function POST(request: NextRequest) {
           ])
           .select()
 
-        const { data: assessment, error: assessmentError } = await safeInsertSingle(insertResult)
+        const { data: insertedAssessments, error: assessmentError } =
+          await safeInsertSingle(insertResult)
+        const assessment = Array.isArray(insertedAssessments)
+          ? insertedAssessments[0]
+          : insertedAssessments
 
         if (assessmentError || !assessment) {
           console.error('Fallback assessment creation error:', assessmentError)
@@ -184,7 +197,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // ✅ Response
+    // ✅ Return success response
     const responseData = {
       success: true,
       assessments: createdAssessments,
@@ -211,6 +224,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Optional: Add rate limiting or other middleware here
 export async function GET() {
   return NextResponse.json(
     { message: 'AI Assessment Parser API - Use POST to parse assessment text' },
