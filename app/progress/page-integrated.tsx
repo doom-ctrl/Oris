@@ -12,10 +12,9 @@ import { MotionWrapper } from "@/components/motion/MotionWrapper"
 import {
   assessmentHelpers,
   progressHelpers,
-  taskHelpers,
   plannerHelpers
 } from "@/lib/databaseHelpers"
-import type { Assessment, ProgressMetric, PlannerSession, Task } from "@/types/database"
+import type { Assessment, ProgressMetric, PlannerSession } from "@/types/database"
 
 // Subject data interface
 interface SubjectData {
@@ -87,7 +86,7 @@ export default function ProgressPageIntegrated() {
   // Get date range start and end
   const getDateRangeStart = (range: DateRange): string => {
     const today = new Date()
-    let start = new Date(today)
+    const start = new Date(today)
 
     switch (range) {
       case "week":

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/contexts/SupabaseAuthContext"
 import {
@@ -25,8 +25,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { MotionWrapper } from "@/components/motion/MotionWrapper"
 import {
   assessmentHelpers,
-  plannerHelpers,
-  taskHelpers
+  plannerHelpers
 } from "@/lib/databaseHelpers"
 import type { Assessment, PlannerSession } from "@/types/database"
 
@@ -72,7 +71,7 @@ export default function PlannerPageIntegrated() {
   })
 
   // Fetch data from Supabase
-  useState(() => {
+  useEffect(() => {
     if (!user) return
 
     const fetchData = async () => {
@@ -98,7 +97,7 @@ export default function PlannerPageIntegrated() {
     }
 
     fetchData()
-  })
+  }, [user, currentDate, viewMode])
 
   // Get date range for display
   const getDateRange = useMemo(() => {
@@ -392,7 +391,7 @@ export default function PlannerPageIntegrated() {
           <div className="bg-card rounded-lg border border-border/50 overflow-hidden">
             {/* Calendar Header */}
             <div className="grid grid-cols-7 border-b border-border/50 bg-muted/30">
-              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => (
+              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                 <div
                   key={day}
                   className="p-3 text-center text-sm font-medium text-foreground border-r border-border/50 last:border-r-0"
@@ -618,7 +617,7 @@ export default function PlannerPageIntegrated() {
                   <label className="text-sm font-medium">Type</label>
                   <select
                     value={newSession.type}
-                    onChange={(e) => setNewSession(prev => ({ ...prev, type: e.target.value as any }))}
+                    onChange={(e) => setNewSession(prev => ({ ...prev, type: e.target.value as 'study' | 'review' | 'break' | 'assignment' | 'project' }))}
                     className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm"
                   >
                     <option value="study">Study Session</option>

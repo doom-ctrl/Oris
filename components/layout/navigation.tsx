@@ -9,7 +9,6 @@ import {
   ClipboardList,
   Calendar,
   TrendingUp,
-  User,
   LogIn,
   LogOut,
   UserRound,

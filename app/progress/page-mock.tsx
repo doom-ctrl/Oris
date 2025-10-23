@@ -472,7 +472,7 @@ export default function ProgressPage() {
                         Great work!
                       </h3>
                       <p className="text-green-700 dark:text-green-300">
-                        You've improved {Math.abs(summaryMetrics.completionChange)}% this week. Keep up the excellent momentum!
+                        You&apos;ve improved {Math.abs(summaryMetrics.completionChange)}% this week. Keep up the excellent momentum!
                       </p>
                     </div>
                   </div>

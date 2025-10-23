@@ -82,7 +82,7 @@ export default function ForgotPasswordPage() {
             <>
               <h1 className="text-2xl font-bold text-foreground mb-2">Forgot your password?</h1>
               <p className="text-muted-foreground">
-                No worries! Enter your email address and we'll send you a link to reset your password.
+                No worries! Enter your email address and we&apos;ll send you a link to reset your password.
               </p>
             </>
           ) : (
@@ -92,7 +92,7 @@ export default function ForgotPasswordPage() {
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-2">Check your email</h1>
               <p className="text-muted-foreground">
-                We've sent a password reset link to your email address.
+                We&apos;ve sent a password reset link to your email address.
               </p>
             </>
           )}
@@ -158,7 +158,7 @@ export default function ForgotPasswordPage() {
 
           {!isSubmitted && (
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
                 href="/auth/sign-up"
                 className="text-primary hover:text-primary/80 font-medium transition-colors"

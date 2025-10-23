@@ -25,8 +25,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { MotionWrapper } from "@/components/motion/MotionWrapper"
 import {
   assessmentHelpers,
-  plannerHelpers,
-  taskHelpers
+  plannerHelpers
 } from "@/lib/databaseHelpers"
 import type { Assessment, PlannerSession } from "@/types/database"
 
@@ -618,7 +617,7 @@ export default function PlannerPageIntegrated() {
                   <label className="text-sm font-medium">Type</label>
                   <select
                     value={newSession.type}
-                    onChange={(e) => setNewSession(prev => ({ ...prev, type: e.target.value as any }))}
+                    onChange={(e) => setNewSession(prev => ({ ...prev, type: e.target.value as 'study' | 'review' | 'break' | 'assignment' | 'project' }))}
                     className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm"
                   >
                     <option value="study">Study Session</option>

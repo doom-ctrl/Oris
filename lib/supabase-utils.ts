@@ -15,7 +15,7 @@ export interface SupabaseResponse<T> {
  * Handles the common case where .single() might cause 406 errors
  */
 export async function safeSingle<T>(
-  queryBuilder: any
+  queryBuilder: { data?: T; error?: unknown }
 ): Promise<SupabaseResponse<T>> {
   try {
     const { data, error } = await queryBuilder
@@ -62,7 +62,7 @@ export async function safeSingle<T>(
  * Safely executes a Supabase insert operation that expects a single result
  */
 export async function safeInsertSingle<T>(
-  queryBuilder: any
+  queryBuilder: { data?: T; error?: unknown }
 ): Promise<SupabaseResponse<T>> {
   try {
     const { data, error } = await queryBuilder
@@ -103,7 +103,7 @@ export async function safeInsertSingle<T>(
  * Safely executes a Supabase update operation that expects a single result
  */
 export async function safeUpdateSingle<T>(
-  queryBuilder: any
+  queryBuilder: { data?: T; error?: unknown }
 ): Promise<SupabaseResponse<T>> {
   try {
     const { data, error } = await queryBuilder
@@ -150,6 +150,6 @@ export function isNoRowsError(error: PostgrestError | null): boolean {
 /**
  * Checks if an error is a 406 Not Acceptable error
  */
-export function is406Error(error: any): boolean {
+export function is406Error(error: { status?: number; message?: string }): boolean {
   return error?.status === 406 || error?.message?.includes('406') || error?.message?.includes('Not Acceptable')
 }

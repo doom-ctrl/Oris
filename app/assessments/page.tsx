@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Plus, Search, Filter, ChevronLeft, Calendar, Clock, CheckCircle, Circle, Sparkles, Loader2, AlertCircle, Trash2, Edit3 } from "lucide-react"
+import { Plus, Search, ChevronLeft, Calendar, CheckCircle, Circle, Sparkles, Loader2, AlertCircle, Trash2, Edit3 } from "lucide-react"
 import { useAuth } from "@/contexts/SupabaseAuthContext"
 import { ProtectedRoute } from "@/components/ProtectedRoute"
 import { Button } from "@/components/ui/button"
@@ -698,19 +698,19 @@ function AssessmentsPage() {
                         <div className="text-sm text-muted-foreground space-y-2">
                           <div className="space-y-1">
                             <p className="font-medium text-foreground">Natural Language:</p>
-                            <p>"I have a science report due next week about cells"</p>
+                            <p>&quot;I have a science report due next week about cells&quot;</p>
                           </div>
                           <div className="space-y-1">
                             <p className="font-medium text-foreground">Multiple Assessments:</p>
-                            <p>"Math homework on Friday and history essay due Monday"</p>
+                            <p>&quot;Math homework on Friday and history essay due Monday&quot;</p>
                           </div>
                           <div className="space-y-1">
                             <p className="font-medium text-foreground">Relative Dates:</p>
-                            <p>"Presentation in two weeks, study guide due Friday"</p>
+                            <p>&quot;Presentation in two weeks, study guide due Friday&quot;</p>
                           </div>
                           <div className="space-y-1">
                             <p className="font-medium text-foreground">Traditional Format:</p>
-                            <p>"Assessment: English Essay, Due: Nov 15, Tasks: Research, Write, Edit"</p>
+                            <p>&quot;Assessment: English Essay, Due: Nov 15, Tasks: Research, Write, Edit&quot;</p>
                           </div>
                         </div>
                       </div>

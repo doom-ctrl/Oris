@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Plus, Search, Filter, ChevronLeft, Clock, CheckCircle, Circle, Calendar } from "lucide-react"
+import { Plus, Search, ChevronLeft, CheckCircle, Circle, Calendar } from "lucide-react"
 import { useAuth } from "@/contexts/SupabaseAuthContext"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

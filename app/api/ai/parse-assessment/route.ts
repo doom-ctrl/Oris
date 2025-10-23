@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server'
-import { smartParseAssessments, getUserContext, validateParsedAssessment, createFallbackAssessment, type ParsedAssessment, type SmartParseResponse } from '@/lib/aiClient'
+import { smartParseAssessments, getUserContext, validateParsedAssessment, createFallbackAssessment, type SmartParseResponse } from '@/lib/aiClient'
 import { safeInsertSingle } from '@/lib/supabase-utils'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
 
     let smartResponse: SmartParseResponse | null = null
     let usedFallback = false
-    let createdAssessments: any[] = []
-    let createdTasks: any[] = []
+    let createdAssessments: unknown[] = []
+    let createdTasks: unknown[] = []
 
     try {
       // Get user context for smarter parsing
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Create assessment
-        const { data: assessment, error: assessmentError } = await safeInsertSingle<any>(
+        const { data: assessment, error: assessmentError } = await safeInsertSingle(
           supabase
             .from('assessments')
             .insert([{
@@ -105,14 +105,10 @@ export async function POST(request: NextRequest) {
           user_id: user.id
         }))
 
-        const { data: tasks, error: tasksError } = await supabase
+        const { data: tasks } = await supabase
           .from('tasks')
           .insert(tasksToInsert)
           .select()
-
-        if (tasksError) {
-          console.error('Tasks creation error:', tasksError)
-        }
 
         createdAssessments.push(assessment)
         createdTasks.push(...(tasks || []))
@@ -130,7 +126,7 @@ export async function POST(request: NextRequest) {
         // Create fallback assessment using the old method
         const fallbackAssessment = createFallbackAssessment(text.trim())
 
-        const { data: assessment, error: assessmentError } = await safeInsertSingle<any>(
+        const { data: assessment, error: assessmentError } = await safeInsertSingle(
           supabase
             .from('assessments')
             .insert([{
@@ -152,7 +148,7 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        const { data: tasks, error: tasksError } = await supabase
+        const { data: tasks } = await supabase
           .from('tasks')
           .insert(fallbackAssessment.tasks.map(task => ({
             assessment_id: assessment.id,

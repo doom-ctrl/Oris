@@ -24,8 +24,8 @@ export interface SmartParseResponse {
 
 export interface AIImportResponse {
   success: boolean
-  assessment?: any
-  tasks?: any[]
+  assessment?: unknown
+  tasks?: unknown[]
   error?: string
 }
 
@@ -170,8 +170,8 @@ Examples of input handling:
         due_date: assessment.due_date || undefined,
         description: assessment.description?.trim() || undefined,
         tasks: assessment.tasks
-          .filter((task: any) => task.title && task.title.trim())
-          .map((task: any) => ({
+          .filter((task: { title?: string }) => task.title && task.title.trim())
+          .map((task: { title: string; description?: string }) => ({
             title: task.title.trim(),
             description: task.description?.trim() || undefined
           }))
