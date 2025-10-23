@@ -90,7 +90,7 @@ export default function Home() {
                   transition={{ duration: 0.6, delay: 0.2 }}
                   className="flex flex-col sm:flex-row gap-4 justify-center items-center"
                 >
-                  <Link href="/sign-up">
+                  <Link href="/auth/sign-up">
                     <Button size="lg" className="gap-2 text-base px-8 py-3">
                       Get Started
                       <ArrowRight className="h-5 w-5" />
@@ -276,7 +276,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <Link href="/sign-up">
+                <Link href="/auth/sign-up">
                   <Button size="lg" className="gap-2 text-base px-8 py-3">
                     Get Started Now
                     <ArrowRight className="h-5 w-5" />

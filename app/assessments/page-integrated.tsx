@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Plus, Search, Filter, ChevronLeft, Calendar, Clock, CheckCircle, Circle } from "lucide-react"
+import { Plus, Search, Filter, ChevronLeft, Clock, CheckCircle, Circle, Calendar } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea"
 import { MotionWrapper } from "@/components/motion/MotionWrapper"
 import { assessmentHelpers, taskHelpers } from "@/lib/databaseHelpers"
-import type { Assessment, Task as DBTask } from "@/types/database"
+import { Task as DBTask } from "@/types/database"
 
 // Local task interface for UI
 interface Task {
@@ -195,7 +195,9 @@ export default function AssessmentsPageIntegrated() {
       // Create task in database
       const newTask = await taskHelpers.createTask({
         title: taskTitle,
-        assessment_id: assessmentId
+        assessment_id: assessmentId,
+        completed: false,
+        priority: 'medium'
       }, user.id)
 
       // Update local state
@@ -234,7 +236,10 @@ export default function AssessmentsPageIntegrated() {
         title: newAssessment.title,
         subject: newAssessment.subject,
         description: newAssessment.description,
-        due_date: newAssessment.dueDate
+        due_date: newAssessment.dueDate,
+        status: 'upcoming',
+        progress: 0,
+        priority: 'medium'
       }, user.id)
 
       const localAssessment: LocalAssessment = {
@@ -242,7 +247,7 @@ export default function AssessmentsPageIntegrated() {
         title: assessment.title,
         subject: assessment.subject,
         description: assessment.description || "",
-        dueDate: assessment.due_date,
+        dueDate: assessment.due_date || "",
         status: "upcoming",
         progress: 0,
         tasks: []

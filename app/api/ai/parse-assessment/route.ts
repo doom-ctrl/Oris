@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Create assessment
-        const { data: assessment, error: assessmentError } = await safeInsertSingle(
+        const { data: assessment, error: assessmentError } = await safeInsertSingle<any>(
           supabase
             .from('assessments')
             .insert([{
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
         // Create fallback assessment using the old method
         const fallbackAssessment = createFallbackAssessment(text.trim())
 
-        const { data: assessment, error: assessmentError } = await safeInsertSingle(
+        const { data: assessment, error: assessmentError } = await safeInsertSingle<any>(
           supabase
             .from('assessments')
             .insert([{

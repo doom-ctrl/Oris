@@ -163,13 +163,13 @@ export function Navigation() {
             ) : (
               <div className="flex items-center space-x-2">
                 <Button variant="ghost" size="sm" asChild>
-                  <Link href="/auth" className="flex items-center space-x-1">
+                  <Link href="/auth/sign-in" className="flex items-center space-x-1">
                     <LogIn className="h-4 w-4" />
                     <span className="hidden sm:inline">Sign In</span>
                   </Link>
                 </Button>
                 <Button size="sm" asChild>
-                  <Link href="/auth" className="flex items-center space-x-1">
+                  <Link href="/auth/sign-up" className="flex items-center space-x-1">
                     <UserRound className="h-4 w-4" />
                     <span className="hidden sm:inline">Get Started</span>
                   </Link>
