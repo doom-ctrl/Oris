@@ -1,11 +1,5 @@
 "use client"
 
-<<<<<<< HEAD
-import { useState, useEffect, useMemo } from "react"
-import { motion } from "framer-motion"
-import { useAuth } from "@/contexts/SupabaseAuthContext"
-import { TrendingUp, BookOpen, CheckCircle, Activity, Award, Target, BarChart3 } from "lucide-react"
-=======
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useAuth } from "@/contexts/SupabaseAuthContext"
@@ -15,20 +9,20 @@ import {
   CheckCircle,
   Activity,
   Target,
-  Calendar,
   TrendingUp,
   BarChart3
 } from "lucide-react"
->>>>>>> 692415f97cdc6f58945ae24ff3f33f444cdca42c
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
 import { MotionWrapper } from "@/components/motion/MotionWrapper"
 import {
   assessmentHelpers,
   progressHelpers,
   plannerHelpers
 } from "@/lib/databaseHelpers"
-import type { Assessment, ProgressMetric, PlannerSession } from "@/types/database"
+import type { Assessment, ProgressMetric } from "@/types/database"
 
 // --------------------------------------------------
 // ✅ Types
@@ -54,8 +48,7 @@ export default function PlannerPageIntegrated() {
   const [isLoading, setIsLoading] = useState(true)
   const [assessments, setAssessments] = useState<Assessment[]>([])
   const [progressMetrics, setProgressMetrics] = useState<ProgressMetric[]>([])
-  const [plannerSessions, setPlannerSessions] = useState<PlannerSession[]>([])
-  const [dateRange, setDateRange] = useState<DateRange>("week")
+  const [dateRange] = useState<DateRange>("week")
 
   // ✅ Explicit type annotation fixes the “not assignable” error
   const [newSession, setNewSession] = useState<NewSession>({
@@ -77,7 +70,7 @@ export default function PlannerPageIntegrated() {
     const fetchData = async () => {
       try {
         setIsLoading(true)
-        const [a, m, s] = await Promise.all([
+        const [a, m] = await Promise.all([
           assessmentHelpers.getUserAssessments(user.id),
           progressHelpers.getProgressMetrics(
             user.id,
@@ -92,7 +85,6 @@ export default function PlannerPageIntegrated() {
         ])
         setAssessments(a)
         setProgressMetrics(m)
-        setPlannerSessions(s)
       } catch (err) {
         console.error("Error fetching planner data:", err)
       } finally {
@@ -106,147 +98,104 @@ export default function PlannerPageIntegrated() {
   // --------------------------------------------------
   // ✅ Date helpers
   // --------------------------------------------------
-  const getDateRangeStart = (range: DateRange) => {
-    const today = new Date()
-    const start = new Date(today)
-    if (range === "week") start.setDate(today.getDate() - 7)
-    if (range === "month") start.setMonth(today.getMonth() - 1)
-    if (range === "term") start.setMonth(today.getMonth() - 3)
+  const getDateRangeStart = (range: DateRange): string => {
+    const now = new Date()
+    const start = new Date()
+    
+    switch (range) {
+      case "week":
+        start.setDate(now.getDate() - 7)
+        break
+      case "month":
+        start.setMonth(now.getMonth() - 1)
+        break
+      case "term":
+        start.setMonth(now.getMonth() - 3)
+        break
+    }
+    
     return start.toISOString().split("T")[0]
   }
 
-<<<<<<< HEAD
-  const getDateRangeEnd = (): string => {
-    return new Date().toISOString().split('T')[0]
+  const getDateRangeEnd = () => new Date().toISOString().split("T")[0]
+
+  // --------------------------------------------------
+  // ✅ Helper functions
+  // --------------------------------------------------
+  const getTrendColor = (trend: number | string): string => {
+    const trendValue = typeof trend === 'string' ? parseInt(trend) : trend
+    if (trendValue > 0) return "text-green-600"
+    if (trendValue < 0) return "text-red-600"
+    return "text-gray-600"
   }
 
-  // Calculate summary metrics
-  const summaryMetrics = useMemo(() => {
-    if (assessments.length === 0) {
-      return {
-        overallCompletion: 0,
-        completionChange: 0,
-        assessmentsCompleted: 0,
-        tasksCompleted: 0,
-        activeSubjects: 0,
-        weeklyTrend: "stable" as const
-      }
+  // Calculate summary metrics from progress metrics
+  const summaryMetrics = {
+    overallCompletion: progressMetrics.length > 0 
+      ? Math.round(progressMetrics.reduce((acc, metric) => acc + (metric.overall_completion || 0), 0) / progressMetrics.length)
+      : 0,
+    completionChange: 12, // Placeholder - could be calculated from historical data
+    weeklyTrend: 8, // Placeholder - could be calculated from historical data
+    assessmentsCompleted: assessments.filter(a => a.status === 'completed').length,
+    tasksCompleted: progressMetrics.reduce((acc, metric) => acc + (metric.tasks_completed || 0), 0),
+    activeSubjects: new Set(assessments.map(a => a.subject)).size
+  }
+
+  // Mock recent activity data
+  const recentActivity = [
+    {
+      id: '1',
+      type: 'assessment' as const,
+      title: 'Math Quiz Completed',
+      description: 'Calculus fundamentals',
+      timestamp: '2 hours ago',
+      value: 85
+    },
+    {
+      id: '2',
+      type: 'task' as const,
+      title: 'Assignment Submitted',
+      description: 'History research paper',
+      timestamp: '4 hours ago',
+      value: null
+    },
+    {
+      id: '3',
+      type: 'milestone' as const,
+      title: 'Study Goal Reached',
+      description: '5 hours focused study',
+      timestamp: '1 day ago',
+      value: 100
     }
+  ]
 
-    const totalAssessments = assessments.length
-    const completedAssessments = assessments.filter(a => a.status === 'completed').length
-    const totalProgress = assessments.reduce((sum, a) => sum + a.progress, 0)
-    const overallCompletion = Math.round(totalProgress / totalAssessments)
-
-    // Calculate tasks completed
-    const tasksCompleted = progressMetrics.reduce((sum, m) => sum + m.tasks_completed, 0)
-
-    // Get unique subjects
-    const uniqueSubjects = new Set(assessments.map(a => a.subject))
-
-    // Calculate trend (simplified - using latest vs previous metric)
-    const completionChange = progressMetrics.length >= 2
-      ? progressMetrics[progressMetrics.length - 1].overall_completion -
-        progressMetrics[progressMetrics.length - 2].overall_completion
-      : 0
-
-    return {
-      overallCompletion,
-      completionChange,
-      assessmentsCompleted: completedAssessments,
-      tasksCompleted,
-      activeSubjects: uniqueSubjects.size,
-      weeklyTrend: completionChange > 0 ? "up" as const : completionChange < 0 ? "down" as const : "stable" as const
+  // Mock subject data
+  const filteredSubjectData = [
+    {
+      name: 'Mathematics',
+      completedAssessments: 8,
+      totalAssessments: 10,
+      completion: 80,
+      trend: 'up' as const,
+      trendValue: 5
+    },
+    {
+      name: 'Science',
+      completedAssessments: 6,
+      totalAssessments: 8,
+      completion: 75,
+      trend: 'up' as const,
+      trendValue: 3
+    },
+    {
+      name: 'History',
+      completedAssessments: 4,
+      totalAssessments: 7,
+      completion: 57,
+      trend: 'down' as const,
+      trendValue: -2
     }
-  }, [assessments, progressMetrics])
-
-  // Generate subject data
-  const subjectData = useMemo(() => {
-    const subjectMap = new Map<string, SubjectData>()
-
-    assessments.forEach(assessment => {
-      if (!subjectMap.has(assessment.subject)) {
-        subjectMap.set(assessment.subject, {
-          name: assessment.subject,
-          completion: 0,
-          totalAssessments: 0,
-          completedAssessments: 0,
-          trend: "stable",
-          trendValue: 0
-        })
-      }
-
-      const subject = subjectMap.get(assessment.subject)!
-      subject.totalAssessments++
-      subject.completion += assessment.progress
-
-      if (assessment.status === 'completed') {
-        subject.completedAssessments++
-      }
-    })
-
-    // Calculate averages and trends
-    subjectMap.forEach(subject => {
-      subject.completion = Math.round(subject.completion / subject.totalAssessments)
-      // Simplified trend calculation
-      subject.trend = subject.completion >= 80 ? "up" : subject.completion >= 60 ? "stable" : "down"
-      subject.trendValue = Math.random() * 20 - 10 // Placeholder - would calculate from historical data
-    })
-
-    return Array.from(subjectMap.values())
-  }, [assessments])
-
-  // Generate recent activity
-  const recentActivity: ActivityItem[] = useMemo(() => {
-    const activities: ActivityItem[] = []
-
-    // Add completed assessments
-    assessments
-      .filter(a => a.status === 'completed')
-      .slice(-3)
-      .forEach(assessment => {
-        activities.push({
-          id: assessment.id,
-          type: "assessment",
-          title: assessment.title,
-          description: assessment.subject,
-          timestamp: `${Math.floor(Math.random() * 7) + 1} hours ago`,
-          value: 100
-        })
-      })
-
-    // Add recent planner sessions
-    plannerSessions
-      .slice(-3)
-      .forEach(session => {
-        activities.push({
-          id: session.id,
-          type: session.type === 'milestone' ? 'milestone' : 'task',
-          title: session.title,
-          description: session.type,
-          timestamp: `${Math.floor(Math.random() * 24) + 1} hours ago`
-        })
-      })
-
-    return activities.sort((a, b) => parseInt(a.timestamp) - parseInt(b.timestamp)).slice(0, 4)
-  }, [assessments, plannerSessions])
-
-  // Filter subject data
-  const filteredSubjectData = useMemo(() => {
-    if (selectedSubject === "all") return subjectData
-    return subjectData.filter(subject => subject.name.toLowerCase().includes(selectedSubject.toLowerCase()))
-  }, [subjectData, selectedSubject])
-
-  // Get trend color
-  const getTrendColor = (trend: "up" | "down" | "stable") => {
-    switch (trend) {
-      case "up": return "text-green-600 dark:text-green-400"
-      case "down": return "text-red-600 dark:text-red-400"
-      case "stable": return "text-muted-foreground"
-      default: return "text-muted-foreground"
-    }
-=======
-  const getDateRangeEnd = () => new Date().toISOString().split("T")[0]
+  ]
 
   // --------------------------------------------------
   // ✅ Handlers
@@ -254,7 +203,6 @@ export default function PlannerPageIntegrated() {
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedType = e.target.value as SessionType
     setNewSession(prev => ({ ...prev, type: selectedType }))
->>>>>>> 692415f97cdc6f58945ae24ff3f33f444cdca42c
   }
 
   // --------------------------------------------------
@@ -318,9 +266,16 @@ export default function PlannerPageIntegrated() {
             <div className="p-3 rounded-full bg-green-500/10">
               <Award className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
-<<<<<<< HEAD
-          </div>
-        </header>
+            <div className="flex-1">
+              <h3 className="font-semibold text-green-800 dark:text-green-200">
+                Great work!
+              </h3>
+              <p className="text-green-700 dark:text-green-300">
+                Your planner and progress are synced and running smoothly.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Summary Zone */}
         <section>
@@ -589,44 +544,30 @@ export default function PlannerPageIntegrated() {
           </motion.section>
 
           {/* Motivational Section */}
-          {summaryMetrics.weeklyTrend === "up" && (
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-            >
-              <Card className="border-green-200 dark:border-green-800/50 bg-gradient-to-r from-green-50/50 to-transparent dark:from-green-950/20">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-full bg-green-500/10">
-                      <Award className="h-6 w-6 text-green-600 dark:text-green-400" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-green-800 dark:text-green-200">
-                        Great work!
-                      </h3>
-                      <p className="text-green-700 dark:text-green-300">
-                        You&apos;ve improved {Math.abs(summaryMetrics.completionChange)}% this {dateRange}. Keep up the excellent momentum!
-                      </p>
-                    </div>
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+          >
+            <Card className="border-green-200 dark:border-green-800/50 bg-gradient-to-r from-green-50/50 to-transparent dark:from-green-950/20">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-full bg-green-500/10">
+                    <Award className="h-6 w-6 text-green-600 dark:text-green-400" />
                   </div>
-                </CardContent>
-              </Card>
-            </motion.section>
-          )}
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-green-800 dark:text-green-200">
+                      Great work!
+                    </h3>
+                    <p className="text-green-700 dark:text-green-300">
+                      Your planner and progress are synced and running smoothly.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.section>
         </div>
-=======
-            <div>
-              <h3 className="font-semibold text-green-800 dark:text-green-200">
-                Great work!
-              </h3>
-              <p className="text-green-700 dark:text-green-300">
-                Your planner and progress are synced and running smoothly.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
->>>>>>> 692415f97cdc6f58945ae24ff3f33f444cdca42c
       </div>
     </MotionWrapper>
   )

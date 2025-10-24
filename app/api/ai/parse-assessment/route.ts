@@ -1,7 +1,4 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server'
-<<<<<<< HEAD
-import { smartParseAssessments, getUserContext, validateParsedAssessment, createFallbackAssessment, type SmartParseResponse } from '@/lib/aiClient'
-=======
 import {
   smartParseAssessments,
   getUserContext,
@@ -10,25 +7,18 @@ import {
   type SmartParseResponse
 } from '@/lib/aiClient'
 import { safeInsertSingle } from '@/lib/supabase-utils'
->>>>>>> 692415f97cdc6f58945ae24ff3f33f444cdca42c
 import { NextRequest, NextResponse } from 'next/server'
-import type { Assessment } from '@/types/database'
 
 export async function POST(request: NextRequest) {
   console.log('AI Parse API called')
 
   try {
     // Get user session from Supabase
-<<<<<<< HEAD
     const supabase = await createServerSupabaseClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-=======
-    const supabase = createServerSupabaseClient()
     const {
       data: { user },
       error: authError
     } = await supabase.auth.getUser()
->>>>>>> 692415f97cdc6f58945ae24ff3f33f444cdca42c
 
     console.log('Auth check:', { user: !!user, authError })
 
@@ -94,23 +84,6 @@ export async function POST(request: NextRequest) {
           parsedAssessment.due_date = futureDate.toISOString().split('T')[0]
         }
 
-<<<<<<< HEAD
-        // Create assessment
-        const { data: assessmentData, error: assessmentError } = await supabase
-          .from('assessments')
-          .insert([{
-            title: parsedAssessment.title,
-            subject: parsedAssessment.subject || 'General',
-            description: parsedAssessment.description,
-            due_date: parsedAssessment.due_date,
-            progress: 0,
-            user_id: user.id
-          }])
-          .select()
-          .single()
-        
-        const assessment = assessmentData as Assessment
-=======
         // ✅ FIX 1: await Supabase insert before passing to safeInsertSingle
         const insertResult = await supabase
           .from('assessments')
@@ -133,7 +106,6 @@ export async function POST(request: NextRequest) {
         const assessment = Array.isArray(insertedAssessments)
           ? insertedAssessments[0]
           : insertedAssessments
->>>>>>> 692415f97cdc6f58945ae24ff3f33f444cdca42c
 
         if (assessmentError || !assessment) {
           console.error('Assessment creation error:', assessmentError)
@@ -169,22 +141,6 @@ export async function POST(request: NextRequest) {
         // Create fallback assessment using the old method
         const fallbackAssessment = createFallbackAssessment(text.trim())
 
-<<<<<<< HEAD
-        const { data: assessmentData, error: assessmentError } = await supabase
-          .from('assessments')
-          .insert([{
-            title: fallbackAssessment.title,
-            subject: fallbackAssessment.subject || 'General',
-            description: fallbackAssessment.description,
-            due_date: fallbackAssessment.due_date,
-            progress: 0,
-            user_id: user.id
-          }])
-          .select()
-          .single()
-        
-        const assessment = assessmentData as Assessment
-=======
         const insertResult = await supabase
           .from('assessments')
           .insert([
@@ -204,7 +160,6 @@ export async function POST(request: NextRequest) {
         const assessment = Array.isArray(insertedAssessments)
           ? insertedAssessments[0]
           : insertedAssessments
->>>>>>> 692415f97cdc6f58945ae24ff3f33f444cdca42c
 
         if (assessmentError || !assessment) {
           console.error('Fallback assessment creation error:', assessmentError)
