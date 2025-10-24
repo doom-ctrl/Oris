@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from 'sonner'
 import { Loader2, User, Mail, Camera, AlertCircle } from 'lucide-react'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import type { Profile } from '@/types/database'
 
 interface FormData {
   first_name: string

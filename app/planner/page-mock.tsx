@@ -16,7 +16,6 @@ import {
   Coffee
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
@@ -119,9 +118,17 @@ export default function PlannerPage() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [isAddSessionOpen, setIsAddSessionOpen] = useState(false)
   const [events, setEvents] = useState<CalendarEvent[]>(mockEvents)
-  const [newSession, setNewSession] = useState({
+  const [newSession, setNewSession] = useState<{
+    title: string
+    type: "assessment" | "study" | "milestone"
+    date: string
+    startTime: string
+    endTime: string
+    description: string
+    linkedAssessment: string
+  }>({
     title: "",
-    type: "study" as const,
+    type: "study",
     date: "",
     startTime: "",
     endTime: "",
@@ -329,7 +336,7 @@ export default function PlannerPage() {
           <div className="bg-card rounded-lg border border-border/50 overflow-hidden">
             {/* Calendar Header */}
             <div className="grid grid-cols-7 border-b border-border/50 bg-muted/30">
-              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => (
+              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                 <div
                   key={day}
                   className="p-3 text-center text-sm font-medium text-foreground border-r border-border/50 last:border-r-0"
@@ -555,7 +562,7 @@ export default function PlannerPage() {
                   <label className="text-sm font-medium">Type</label>
                   <select
                     value={newSession.type}
-                    onChange={(e) => setNewSession(prev => ({ ...prev, type: e.target.value as 'study' | 'review' | 'break' | 'assignment' | 'project' }))}
+                    onChange={(e) => setNewSession(prev => ({ ...prev, type: e.target.value as 'study' | 'milestone' }))}
                     className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm"
                   >
                     <option value="study">Study Session</option>

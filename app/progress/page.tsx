@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { useAuth } from "@/contexts/SupabaseAuthContext"
-import { TrendingUp, Calendar, BookOpen, CheckCircle, Activity, Award, Target, BarChart3 } from "lucide-react"
+import { TrendingUp, BookOpen, CheckCircle, Activity, Award, Target, BarChart3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -61,12 +61,12 @@ export default function ProgressPageIntegrated() {
           progressHelpers.getProgressMetrics(
             user.id,
             getDateRangeStart(dateRange),
-            getDateRangeEnd(dateRange)
+            getDateRangeEnd()
           ),
           plannerHelpers.getPlannerSessions(
             user.id,
             getDateRangeStart(dateRange),
-            getDateRangeEnd(dateRange)
+            getDateRangeEnd()
           )
         ])
 
@@ -103,7 +103,7 @@ export default function ProgressPageIntegrated() {
     return start.toISOString().split('T')[0]
   }
 
-  const getDateRangeEnd = (range: DateRange): string => {
+  const getDateRangeEnd = (): string => {
     return new Date().toISOString().split('T')[0]
   }
 

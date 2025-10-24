@@ -183,7 +183,7 @@ Examples of input handling:
         clarifications_needed: parsed.clarifications_needed || [],
         context_used: parsed.context_used || ''
       }
-    } catch (parseError) {
+    } catch {
       console.error('Failed to parse AI smart response:', content)
       throw new Error('AI smart response was not valid JSON')
     }
@@ -196,7 +196,7 @@ Examples of input handling:
 /**
  * Gets user context for smarter AI parsing
  */
-export async function getUserContext(userId: string): Promise<{
+export async function getUserContext(): Promise<{
   recentSubjects: string[]
   currentSemester: string
   defaultDueDays: number

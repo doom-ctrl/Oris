@@ -17,7 +17,6 @@ import {
   Coffee
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
@@ -60,9 +59,17 @@ export default function PlannerPageIntegrated() {
   const [assessments, setAssessments] = useState<Assessment[]>([])
   const [plannerSessions, setPlannerSessions] = useState<PlannerSession[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [newSession, setNewSession] = useState({
+  const [newSession, setNewSession] = useState<{
+    title: string
+    type: "assessment" | "study" | "milestone" | "review"
+    date: string
+    startTime: string
+    endTime: string
+    description: string
+    linkedAssessment: string
+  }>({
     title: "",
-    type: "study" as const,
+    type: "study",
     date: "",
     startTime: "",
     endTime: "",
@@ -617,7 +624,7 @@ export default function PlannerPageIntegrated() {
                   <label className="text-sm font-medium">Type</label>
                   <select
                     value={newSession.type}
-                    onChange={(e) => setNewSession(prev => ({ ...prev, type: e.target.value as 'study' | 'review' | 'break' | 'assignment' | 'project' }))}
+                    onChange={(e) => setNewSession(prev => ({ ...prev, type: e.target.value as 'study' | 'milestone' }))}
                     className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm"
                   >
                     <option value="study">Study Session</option>

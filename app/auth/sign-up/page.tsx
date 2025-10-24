@@ -77,7 +77,7 @@ export default function SignUpPage() {
         toast.success('Account created successfully!')
         router.push('/assessments')
       }
-    } catch (error) {
+    } catch {
       toast.error('An error occurred during sign up')
     } finally {
       setIsLoading(false)
@@ -93,7 +93,7 @@ export default function SignUpPage() {
       if (error) {
         toast.error(`Failed to sign up with ${provider}`)
       }
-    } catch (error) {
+    } catch {
       toast.error(`An error occurred during ${provider} sign up`)
     } finally {
       setIsLoading(false)

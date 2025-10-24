@@ -42,7 +42,7 @@ export default function SignInPage() {
         toast.success('Welcome back!')
         router.push('/assessments')
       }
-    } catch (error) {
+    } catch {
       toast.error('An error occurred during sign in')
     } finally {
       setIsLoading(false)
@@ -58,7 +58,7 @@ export default function SignInPage() {
       if (error) {
         toast.error(`Failed to sign in with ${provider}`)
       }
-    } catch (error) {
+    } catch {
       toast.error(`An error occurred during ${provider} sign in`)
     } finally {
       setIsLoading(false)

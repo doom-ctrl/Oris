@@ -6,7 +6,6 @@ import type {
   ProgressMetric,
   PlannerSession,
   Subject,
-  StudySession,
   AssessmentProgress,
   DailySummary,
   Profile
@@ -46,12 +45,12 @@ export const assessmentHelpers = {
 
   // Create new assessment
   async createAssessment(assessment: Omit<Assessment, 'id' | 'user_id' | 'created_at' | 'updated_at'>, userId: string): Promise<Assessment> {
-    const { data, error } = await safeInsertSingle(
-      supabase
-        .from('assessments')
-        .insert({ ...assessment, user_id: userId })
-        .select()
-    )
+    const insertResult = await supabase
+      .from('assessments')
+      .insert({ ...assessment, user_id: userId })
+      .select()
+    
+    const { data, error } = await safeInsertSingle(insertResult)
 
     if (error) {
       console.error('Error creating assessment:', error)
@@ -65,13 +64,13 @@ export const assessmentHelpers = {
 
   // Update assessment
   async updateAssessment(id: string, updates: Partial<Assessment>): Promise<Assessment> {
-    const { data, error } = await safeUpdateSingle(
-      supabase
-        .from('assessments')
-        .update(updates)
-        .eq('id', id)
-        .select()
-    )
+    const updateResult = await supabase
+      .from('assessments')
+      .update(updates)
+      .eq('id', id)
+      .select()
+    
+    const { data, error } = await safeUpdateSingle(updateResult)
 
     if (error) {
       console.error('Error updating assessment:', error)
@@ -131,12 +130,12 @@ export const taskHelpers = {
 
   // Create new task
   async createTask(task: Omit<Task, 'id' | 'user_id' | 'created_at' | 'updated_at'>, userId: string): Promise<Task> {
-    const { data, error } = await safeInsertSingle(
-      supabase
-        .from('tasks')
-        .insert({ ...task, user_id: userId })
-        .select()
-    )
+    const insertResult = await supabase
+      .from('tasks')
+      .insert({ ...task, user_id: userId })
+      .select()
+    
+    const { data, error } = await safeInsertSingle(insertResult)
 
     if (error) {
       console.error('Error creating task:', error)
@@ -150,13 +149,13 @@ export const taskHelpers = {
 
   // Update task
   async updateTask(id: string, updates: Partial<Task>): Promise<Task> {
-    const { data, error } = await safeUpdateSingle(
-      supabase
-        .from('tasks')
-        .update(updates)
-        .eq('id', id)
-        .select()
-    )
+    const updateResult = await supabase
+      .from('tasks')
+      .update(updates)
+      .eq('id', id)
+      .select()
+    
+    const { data, error } = await safeUpdateSingle(updateResult)
 
     if (error) {
       console.error('Error updating task:', error)
@@ -252,12 +251,12 @@ export const progressHelpers = {
 
   // Create or update progress metric
   async upsertProgressMetric(metric: Omit<ProgressMetric, 'id' | 'created_at'>): Promise<ProgressMetric> {
-    const { data, error } = await safeInsertSingle(
-      supabase
-        .from('progress_metrics')
-        .upsert(metric)
-        .select()
-    )
+    const insertResult = await supabase
+      .from('progress_metrics')
+      .upsert(metric)
+      .select()
+    
+    const { data, error } = await safeInsertSingle(insertResult)
 
     if (error) throw error
     if (!data) {
@@ -286,12 +285,12 @@ export const plannerHelpers = {
 
   // Create new planner session
   async createPlannerSession(session: Omit<PlannerSession, 'id' | 'user_id' | 'created_at' | 'updated_at'>, userId: string): Promise<PlannerSession> {
-    const { data, error } = await safeInsertSingle(
-      supabase
-        .from('planner_sessions')
-        .insert({ ...session, user_id: userId })
-        .select()
-    )
+    const insertResult = await supabase
+      .from('planner_sessions')
+      .insert({ ...session, user_id: userId })
+      .select()
+    
+    const { data, error } = await safeInsertSingle(insertResult)
 
     if (error) throw error
     if (!data) {
@@ -302,13 +301,13 @@ export const plannerHelpers = {
 
   // Update planner session
   async updatePlannerSession(id: string, updates: Partial<PlannerSession>): Promise<PlannerSession> {
-    const { data, error } = await safeUpdateSingle(
-      supabase
-        .from('planner_sessions')
-        .update(updates)
-        .eq('id', id)
-        .select()
-    )
+    const updateResult = await supabase
+      .from('planner_sessions')
+      .update(updates)
+      .eq('id', id)
+      .select()
+    
+    const { data, error } = await safeUpdateSingle(updateResult)
 
     if (error) throw error
     if (!data) {
@@ -347,12 +346,12 @@ export const subjectHelpers = {
 
   // Create new subject
   async createSubject(subject: Omit<Subject, 'id' | 'user_id' | 'created_at'>, userId: string): Promise<Subject> {
-    const { data, error } = await safeInsertSingle(
-      supabase
-        .from('subjects')
-        .insert({ ...subject, user_id: userId })
-        .select()
-    )
+    const insertResult = await supabase
+      .from('subjects')
+      .insert({ ...subject, user_id: userId })
+      .select()
+    
+    const { data, error } = await safeInsertSingle(insertResult)
 
     if (error) throw error
     if (!data) {
@@ -388,12 +387,12 @@ export const profileHelpers = {
 
   // Create or update profile
   async upsertProfile(profile: Omit<Profile, 'created_at' | 'updated_at'>): Promise<Profile> {
-    const { data, error } = await safeInsertSingle(
-      supabase
-        .from('profiles')
-        .upsert(profile)
-        .select()
-    )
+    const insertResult = await supabase
+      .from('profiles')
+      .upsert(profile)
+      .select()
+    
+    const { data, error } = await safeInsertSingle(insertResult)
 
     if (error) throw error
     if (!data) {

@@ -48,18 +48,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // If no profile exists, create one
       if (!profiles || profiles.length === 0) {
-        const { data: newProfile, error: createError } = await safeSingle(
-          supabase
-            .from('profiles')
-            .insert({
-              id: user.id,
-              email: user.email || '',
-              first_name: user.user_metadata?.first_name || '',
-              last_name: user.user_metadata?.last_name || '',
-              avatar_url: user.user_metadata?.avatar_url || null
-            })
-            .select()
-        )
+        const insertResult = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            email: user.email || '',
+            first_name: user.user_metadata?.first_name || '',
+            last_name: user.user_metadata?.last_name || '',
+            avatar_url: user.user_metadata?.avatar_url || null
+          })
+          .select()
+          .single()
+        
+        const { data: newProfile, error: createError } = await safeSingle(insertResult)
 
         if (createError) {
           console.error('Error creating profile:', createError)

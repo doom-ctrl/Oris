@@ -1,25 +1,12 @@
-# robots.txt for Oris Assessment Manager
-
+# *
 User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /auth/
 Disallow: /profile/
-Disallow: /_next/
-Disallow: /admin/
 
-# Sitemap
-Sitemap: https://oris.vercel.app/sitemap.xml
+# Host
+Host: http://localhost:3010
 
-# Crawl-delay for respectful crawling
-Crawl-delay: 1
-
-# Allow specific bots
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Slurp
-Allow: /
+# Sitemaps
+Sitemap: http://localhost:3010/sitemap.xml

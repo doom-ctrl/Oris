@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { TrendingUp, Calendar, BookOpen, CheckCircle, Activity, Award, Target, BarChart3 } from "lucide-react"
+import { motion } from "framer-motion"
+import { TrendingUp, BookOpen, CheckCircle, Activity, Award, Target, BarChart3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -106,7 +106,7 @@ export default function ProgressPage() {
       assessmentsCompleted: currentData.assessmentsCompleted,
       tasksCompleted: currentData.tasksCompleted,
       activeSubjects: mockSubjectData.filter(s => s.completion > 0).length,
-      weeklyTrend: completionChange > 0 ? "up" : completionChange < 0 ? "down" : "stable"
+      weeklyTrend: (completionChange > 0 ? "up" : completionChange < 0 ? "down" : "stable") as "up" | "down" | "stable"
     }
   }, [])
 
@@ -126,14 +126,7 @@ export default function ProgressPage() {
     }
   }
 
-  // Get progress color
-  const getProgressColor = (value: number) => {
-    if (value >= 80) return "bg-green-500"
-    if (value >= 60) return "bg-blue-500"
-    if (value >= 40) return "bg-yellow-500"
-    return "bg-red-500"
-  }
-
+  
   // Format date for display
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
