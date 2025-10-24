@@ -15,7 +15,9 @@
       "Bash(dir:*)",
       "Bash(cp:*)",
       "Bash(npx expo start:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(npx create-expo-app:*)",
+      "Bash(npx expo install:*)"
     ],
     "deny": [],
     "ask": []

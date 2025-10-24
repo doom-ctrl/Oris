@@ -1,13 +1,27 @@
 "use client"
 
+<<<<<<< HEAD
 import { useState, useEffect, useMemo } from "react"
 import { motion } from "framer-motion"
 import { useAuth } from "@/contexts/SupabaseAuthContext"
 import { TrendingUp, BookOpen, CheckCircle, Activity, Award, Target, BarChart3 } from "lucide-react"
+=======
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { useAuth } from "@/contexts/SupabaseAuthContext"
+import {
+  Award,
+  BookOpen,
+  CheckCircle,
+  Activity,
+  Target,
+  Calendar,
+  TrendingUp,
+  BarChart3
+} from "lucide-react"
+>>>>>>> 692415f97cdc6f58945ae24ff3f33f444cdca42c
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 import { MotionWrapper } from "@/components/motion/MotionWrapper"
 import {
   assessmentHelpers,
@@ -16,47 +30,54 @@ import {
 } from "@/lib/databaseHelpers"
 import type { Assessment, ProgressMetric, PlannerSession } from "@/types/database"
 
-// Subject data interface
-interface SubjectData {
-  name: string
-  completion: number
-  totalAssessments: number
-  completedAssessments: number
-  trend: "up" | "down" | "stable"
-  trendValue: number
-}
-
-// Activity item interface
-interface ActivityItem {
-  id: string
-  type: "assessment" | "task" | "milestone"
-  title: string
-  description: string
-  timestamp: string
-  value?: number
-}
-
+// --------------------------------------------------
+// ✅ Types
+// --------------------------------------------------
 type DateRange = "week" | "month" | "term"
+type SessionType = "study" | "review" | "break" | "assignment" | "project"
 
-export default function ProgressPageIntegrated() {
+interface NewSession {
+  title: string
+  type: SessionType
+  date: string
+  startTime: string
+  endTime: string
+  description: string
+  linkedAssessment: string
+}
+
+// --------------------------------------------------
+// ✅ Component
+// --------------------------------------------------
+export default function PlannerPageIntegrated() {
   const { user } = useAuth()
-  const [dateRange, setDateRange] = useState<DateRange>("week")
-  const [selectedSubject, setSelectedSubject] = useState<string>("all")
+  const [isLoading, setIsLoading] = useState(true)
   const [assessments, setAssessments] = useState<Assessment[]>([])
   const [progressMetrics, setProgressMetrics] = useState<ProgressMetric[]>([])
   const [plannerSessions, setPlannerSessions] = useState<PlannerSession[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [dateRange, setDateRange] = useState<DateRange>("week")
 
-  // Fetch data from Supabase
+  // ✅ Explicit type annotation fixes the “not assignable” error
+  const [newSession, setNewSession] = useState<NewSession>({
+    title: "",
+    type: "study",
+    date: "",
+    startTime: "",
+    endTime: "",
+    description: "",
+    linkedAssessment: ""
+  })
+
+  // --------------------------------------------------
+  // ✅ Fetch data from Supabase
+  // --------------------------------------------------
   useEffect(() => {
     if (!user) return
 
     const fetchData = async () => {
       try {
         setIsLoading(true)
-
-        // Fetch all data in parallel
-        const [assessmentsData, metricsData, sessionsData] = await Promise.all([
+        const [a, m, s] = await Promise.all([
           assessmentHelpers.getUserAssessments(user.id),
           progressHelpers.getProgressMetrics(
             user.id,
@@ -69,12 +90,11 @@ export default function ProgressPageIntegrated() {
             getDateRangeEnd()
           )
         ])
-
-        setAssessments(assessmentsData)
-        setProgressMetrics(metricsData)
-        setPlannerSessions(sessionsData)
-      } catch (error) {
-        console.error('Error fetching progress data:', error)
+        setAssessments(a)
+        setProgressMetrics(m)
+        setPlannerSessions(s)
+      } catch (err) {
+        console.error("Error fetching planner data:", err)
       } finally {
         setIsLoading(false)
       }
@@ -83,26 +103,19 @@ export default function ProgressPageIntegrated() {
     fetchData()
   }, [user, dateRange])
 
-  // Get date range start and end
-  const getDateRangeStart = (range: DateRange): string => {
+  // --------------------------------------------------
+  // ✅ Date helpers
+  // --------------------------------------------------
+  const getDateRangeStart = (range: DateRange) => {
     const today = new Date()
     const start = new Date(today)
-
-    switch (range) {
-      case "week":
-        start.setDate(today.getDate() - 7)
-        break
-      case "month":
-        start.setMonth(today.getMonth() - 1)
-        break
-      case "term":
-        start.setMonth(today.getMonth() - 3)
-        break
-    }
-
-    return start.toISOString().split('T')[0]
+    if (range === "week") start.setDate(today.getDate() - 7)
+    if (range === "month") start.setMonth(today.getMonth() - 1)
+    if (range === "term") start.setMonth(today.getMonth() - 3)
+    return start.toISOString().split("T")[0]
   }
 
+<<<<<<< HEAD
   const getDateRangeEnd = (): string => {
     return new Date().toISOString().split('T')[0]
   }
@@ -232,14 +245,29 @@ export default function ProgressPageIntegrated() {
       case "stable": return "text-muted-foreground"
       default: return "text-muted-foreground"
     }
+=======
+  const getDateRangeEnd = () => new Date().toISOString().split("T")[0]
+
+  // --------------------------------------------------
+  // ✅ Handlers
+  // --------------------------------------------------
+  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedType = e.target.value as SessionType
+    setNewSession(prev => ({ ...prev, type: selectedType }))
+>>>>>>> 692415f97cdc6f58945ae24ff3f33f444cdca42c
   }
 
+  // --------------------------------------------------
+  // ✅ UI: Guards
+  // --------------------------------------------------
   if (!user) {
     return (
       <MotionWrapper>
-        <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center bg-background">
           <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">Please sign in to view your progress</h1>
+            <h1 className="text-2xl font-bold mb-4">
+              Please sign in to view your planner
+            </h1>
             <Button asChild>
               <a href="/sign-in">Sign In</a>
             </Button>
@@ -252,62 +280,45 @@ export default function ProgressPageIntegrated() {
   if (isLoading) {
     return (
       <MotionWrapper>
-        <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center bg-background">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading your progress data...</p>
+            <div className="animate-spin h-10 w-10 border-b-2 border-primary mx-auto mb-3 rounded-full" />
+            <p className="text-muted-foreground">Loading planner data...</p>
           </div>
         </div>
       </MotionWrapper>
     )
   }
 
+  // --------------------------------------------------
+  // ✅ UI: Main content
+  // --------------------------------------------------
   return (
     <MotionWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-        {/* Header Zone */}
-        <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-bold text-foreground">Progress Overview</h1>
-                <p className="text-muted-foreground">Your performance and trends at a glance</p>
-              </div>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6 space-y-6">
+        {/* Header */}
+        <h2 className="text-lg font-semibold">Create New Session</h2>
 
-              <div className="flex items-center gap-4">
-                {/* Date Range Filter */}
-                <div className="flex gap-1 p-1 bg-muted/50 rounded-md">
-                  {[
-                    { value: "week", label: "This Week" },
-                    { value: "month", label: "This Month" },
-                    { value: "term", label: "This Term" }
-                  ].map((range) => (
-                    <Button
-                      key={range.value}
-                      variant={dateRange === range.value ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setDateRange(range.value as DateRange)}
-                    >
-                      {range.label}
-                    </Button>
-                  ))}
-                </div>
+        {/* Session Type Selector */}
+        <select
+          value={newSession.type}
+          onChange={handleTypeChange}
+          className="w-full px-3 py-2 border rounded-md bg-background text-sm"
+        >
+          <option value="study">Study Session</option>
+          <option value="review">Review</option>
+          <option value="break">Break</option>
+          <option value="assignment">Assignment</option>
+          <option value="project">Project</option>
+        </select>
 
-                {/* Subject Filter */}
-                <select
-                  value={selectedSubject}
-                  onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="px-3 py-2 rounded-md border border-border bg-background text-sm"
-                >
-                  <option value="all">All Subjects</option>
-                  {subjectData.map(subject => (
-                    <option key={subject.name} value={subject.name}>
-                      {subject.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+        {/* Motivational Card */}
+        <Card className="mt-6 border-green-200 dark:border-green-800/50 bg-gradient-to-r from-green-50/50 to-transparent dark:from-green-950/20">
+          <CardContent className="p-6 flex gap-4 items-center">
+            <div className="p-3 rounded-full bg-green-500/10">
+              <Award className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
+<<<<<<< HEAD
           </div>
         </header>
 
@@ -604,6 +615,18 @@ export default function ProgressPageIntegrated() {
             </motion.section>
           )}
         </div>
+=======
+            <div>
+              <h3 className="font-semibold text-green-800 dark:text-green-200">
+                Great work!
+              </h3>
+              <p className="text-green-700 dark:text-green-300">
+                Your planner and progress are synced and running smoothly.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+>>>>>>> 692415f97cdc6f58945ae24ff3f33f444cdca42c
       </div>
     </MotionWrapper>
   )
