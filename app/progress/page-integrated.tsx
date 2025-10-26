@@ -322,8 +322,8 @@ export default function PlannerPageIntegrated() {
               <Card className="h-full transition-all duration-300 hover:shadow-lg">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-blue-500/10">
-                      <BookOpen className="h-5 w-5 text-blue-500" />
+                    <div className="p-2 rounded-lg bg-blue-500/10 dark:bg-blue-500/20">
+                      <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <Badge variant="outline" className="text-blue-600 border-blue-200">
                       Active
@@ -351,8 +351,8 @@ export default function PlannerPageIntegrated() {
               <Card className="h-full transition-all duration-300 hover:shadow-lg">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-green-500/10">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                    <div className="p-2 rounded-lg bg-green-500/10 dark:bg-green-500/20">
+                      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                     </div>
                     <div className="flex items-center gap-1 text-sm text-green-600">
                       <TrendingUp className="h-4 w-4" />
@@ -381,8 +381,8 @@ export default function PlannerPageIntegrated() {
               <Card className="h-full transition-all duration-300 hover:shadow-lg">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-purple-500/10">
-                      <BarChart3 className="h-5 w-5 text-purple-500" />
+                    <div className="p-2 rounded-lg bg-purple-500/10 dark:bg-purple-500/20">
+                      <BarChart3 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                     </div>
                     <Badge variant="outline" className="text-purple-600 border-purple-200">
                       Balanced
@@ -471,13 +471,13 @@ export default function PlannerPageIntegrated() {
                         className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors"
                       >
                         <div className={`p-2 rounded-lg ${
-                          activity.type === 'assessment' ? 'bg-blue-500/10' :
-                          activity.type === 'task' ? 'bg-green-500/10' :
-                          'bg-purple-500/10'
+                          activity.type === 'assessment' ? 'bg-blue-500/10 dark:bg-blue-500/20' :
+                          activity.type === 'task' ? 'bg-green-500/10 dark:bg-green-500/20' :
+                          'bg-purple-500/10 dark:bg-purple-500/20'
                         }`}>
-                          {activity.type === 'assessment' && <BookOpen className="h-4 w-4 text-blue-500" />}
-                          {activity.type === 'task' && <CheckCircle className="h-4 w-4 text-green-500" />}
-                          {activity.type === 'milestone' && <Award className="h-4 w-4 text-purple-500" />}
+                          {activity.type === 'assessment' && <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400" />}
+                          {activity.type === 'task' && <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />}
+                          {activity.type === 'milestone' && <Award className="h-4 w-4 text-purple-600 dark:text-purple-400" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{activity.title}</p>

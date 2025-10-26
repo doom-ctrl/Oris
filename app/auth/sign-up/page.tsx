@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
 import { useAuth } from '@/contexts/SupabaseAuthContext'
 import { toast } from 'sonner'
 
@@ -111,12 +113,12 @@ export default function SignUpPage() {
     if (password.match(/[^a-zA-Z0-9]/)) strength++
 
     const levels = [
-      { strength: 0, text: 'Very weak', color: 'text-red-500' },
-      { strength: 1, text: 'Weak', color: 'text-orange-500' },
-      { strength: 2, text: 'Fair', color: 'text-yellow-500' },
-      { strength: 3, text: 'Good', color: 'text-blue-500' },
-      { strength: 4, text: 'Strong', color: 'text-green-500' },
-      { strength: 5, text: 'Very strong', color: 'text-green-600' }
+      { strength: 0, text: 'Very weak', color: 'text-destructive' },
+      { strength: 1, text: 'Weak', color: 'text-orange-600 dark:text-orange-400' },
+      { strength: 2, text: 'Fair', color: 'text-yellow-600 dark:text-yellow-400' },
+      { strength: 3, text: 'Good', color: 'text-blue-600 dark:text-blue-400' },
+      { strength: 4, text: 'Strong', color: 'text-green-600 dark:text-green-400' },
+      { strength: 5, text: 'Very strong', color: 'text-green-700 dark:text-green-300' }
     ]
 
     return levels[Math.min(strength, 4)]
@@ -125,7 +127,7 @@ export default function SignUpPage() {
   const passwordStrength = getPasswordStrength(password)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -134,32 +136,37 @@ export default function SignUpPage() {
       >
         {/* Logo and Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-3 hover:opacity-80 transition-opacity mb-6">
+          <Link href="/assessments" className="inline-flex items-center space-x-3 hover:opacity-80 transition-opacity mb-6">
             <div className="h-12 w-12 flex-shrink-0">
               <Image
                 src="/logo.svg"
-                alt="Assessment Manager"
+                alt="Oris"
                 width={48}
                 height={48}
                 className="object-contain"
                 priority
               />
             </div>
-            <span className="text-2xl font-bold text-foreground">Assessment Manager</span>
+            <span className="text-2xl font-bold text-foreground">Oris</span>
           </Link>
-          <h1 className="text-2xl font-bold text-foreground mb-2">Create your account</h1>
-          <p className="text-muted-foreground">Start organizing your academic journey today</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Create your account</h1>
+          <p className="text-muted-foreground text-lg">Start organizing your academic journey today</p>
         </div>
 
         {/* Sign Up Form */}
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-6 mb-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <Card className="backdrop-blur-sm border-border/40 mb-6">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl text-center">Create your account</CardTitle>
+            <CardDescription className="text-center">
+              Enter your information to start organizing your academic journey
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName" className="text-sm font-medium text-foreground">
-                  First name
-                </Label>
+                <Label htmlFor="firstName">First name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -176,9 +183,7 @@ export default function SignUpPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="lastName" className="text-sm font-medium text-foreground">
-                  Last name
-                </Label>
+                <Label htmlFor="lastName">Last name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -197,9 +202,7 @@ export default function SignUpPage() {
 
             {/* Email Field */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-foreground">
-                Email address
-              </Label>
+              <Label htmlFor="email">Email address</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -217,9 +220,7 @@ export default function SignUpPage() {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-foreground">
-                Password
-              </Label>
+              <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -241,30 +242,22 @@ export default function SignUpPage() {
                 </button>
               </div>
               {password && (
-                <div className="flex items-center space-x-2 text-xs">
-                  <div className="flex space-x-1">
-                    {[1, 2, 3, 4].map((level) => (
-                      <div
-                        key={level}
-                        className={`h-1 w-6 rounded-full ${
-                          level <= passwordStrength.strength
-                            ? passwordStrength.strength >= 3 ? 'bg-green-500' :
-                              passwordStrength.strength >= 2 ? 'bg-yellow-500' : 'bg-red-500'
-                            : 'bg-gray-200 dark:bg-gray-700'
-                        }`}
-                      />
-                    ))}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Password strength</span>
+                    <span className={passwordStrength.color}>{passwordStrength.text}</span>
                   </div>
-                  <span className={passwordStrength.color}>{passwordStrength.text}</span>
+                  <Progress
+                    value={(passwordStrength.strength / 4) * 100}
+                    className="h-2"
+                  />
                 </div>
               )}
             </div>
 
             {/* Confirm Password Field */}
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
-                Confirm password
-              </Label>
+              <Label htmlFor="confirmPassword">Confirm password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -338,41 +331,42 @@ export default function SignUpPage() {
             </Button>
           </form>
 
-          {/* Social Sign Up */}
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
+            {/* Social Sign Up */}
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <Separator />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or sign up with
+                  </span>
+                </div>
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white dark:bg-slate-800 px-2 text-muted-foreground">
-                  Or sign up with
-                </span>
-              </div>
-            </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <Button
-                variant="outline"
-                onClick={() => handleSocialSignUp('google')}
-                disabled={isLoading}
-                className="w-full"
-              >
-                <Chrome className="h-4 w-4 mr-2" />
-                Google
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleSocialSignUp('github')}
-                disabled={isLoading}
-                className="w-full"
-              >
-                <Github className="h-4 w-4 mr-2" />
-                GitHub
-              </Button>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => handleSocialSignUp('google')}
+                  disabled={isLoading}
+                  className="w-full"
+                >
+                  <Chrome className="h-4 w-4 mr-2" />
+                  Google
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => handleSocialSignUp('github')}
+                  disabled={isLoading}
+                  className="w-full"
+                >
+                  <Github className="h-4 w-4 mr-2" />
+                  GitHub
+                </Button>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Sign In Link */}
         <div className="text-center">

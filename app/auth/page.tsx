@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { createBrowserSupabaseClient } from '@/lib/supabase-client'
+import { MotionWrapper } from '@/components/motion/MotionWrapper'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -19,29 +21,37 @@ export default function AuthPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-3 hover:opacity-80 transition-opacity">
-            <div className="h-12 w-12 flex-shrink-0">
-              <Image
-                src="/logo.svg"
-                alt="Oris"
-                width={48}
-                height={48}
-                className="object-contain"
-                priority
-              />
-            </div>
-            <span className="text-2xl font-bold text-foreground">Oris</span>
-          </Link>
-          <p className="mt-4 text-muted-foreground">
-            Your intelligent assessment and progress management platform
-          </p>
-        </div>
+    <MotionWrapper>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <Link href="/assessments" className="inline-flex items-center space-x-3 hover:opacity-80 transition-opacity">
+              <div className="h-12 w-12 flex-shrink-0">
+                <Image
+                  src="/logo.svg"
+                  alt="Oris"
+                  width={48}
+                  height={48}
+                  className="object-contain"
+                  priority
+                />
+              </div>
+              <span className="text-2xl font-bold text-foreground">Oris</span>
+            </Link>
+            <p className="mt-4 text-muted-foreground text-lg">
+              Your intelligent assessment and progress management platform
+            </p>
+          </div>
 
-        <div className="bg-card border border-border rounded-lg shadow-sm p-6">
-          <Auth
+          <Card className="backdrop-blur-sm border-border/40">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl text-center">Welcome to Oris</CardTitle>
+              <CardDescription className="text-center">
+                Sign in or create an account to manage your assessments
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Auth
             supabaseClient={supabase}
             appearance={{
               theme: ThemeSupa,
@@ -140,15 +150,17 @@ export default function AuthPage() {
                 },
               }
             }}
-          />
-        </div>
+              />
+            </CardContent>
+          </Card>
 
-        <div className="mt-6 text-center">
-          <p className="text-xs text-gray-500">
-            By signing in, you agree to our Terms of Service and Privacy Policy
-          </p>
+          <div className="mt-6 text-center">
+            <p className="text-xs text-muted-foreground">
+              By signing in, you agree to our Terms of Service and Privacy Policy
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </MotionWrapper>
   )
 }

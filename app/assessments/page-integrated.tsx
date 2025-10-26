@@ -123,10 +123,10 @@ export default function AssessmentsPageIntegrated() {
   // Get status color
   const getStatusColor = (status: LocalAssessment["status"]) => {
     switch (status) {
-      case "upcoming": return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
-      case "completed": return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-      case "overdue": return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
-      default: return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300"
+      case "upcoming": return "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/50"
+      case "completed": return "bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400 border border-green-200/50 dark:border-green-800/50"
+      case "overdue": return "bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive-foreground border border-destructive/20 dark:border-destructive/40"
+      default: return "bg-muted text-muted-foreground border border-border/50"
     }
   }
 

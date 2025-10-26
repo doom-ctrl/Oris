@@ -2,6 +2,8 @@
  * AI Client for parsing assessment plans from AI-generated text
  * Integrates with OpenRouter to convert natural language assessment plans
  * into structured assessment and task objects
+ *
+ * Extended to support AI Tutor, Problem Solver, and Flashcard generation
  */
 
 export interface ParsedAssessment {
@@ -275,3 +277,19 @@ export function createFallbackAssessment(rawText: string): ParsedAssessment {
     ]
   }
 }
+
+// NEW AI Features for Study Assistant
+
+export interface TutorMessage {
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
+}
+
+export interface AITutorResponse {
+  reply: string
+  subject?: string
+  examples?: string[]
+  steps?: string[]
+}
+

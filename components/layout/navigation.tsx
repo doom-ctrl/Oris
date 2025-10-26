@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import {
-  Home,
   ClipboardList,
   Calendar,
   TrendingUp,
@@ -29,14 +28,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 const navigation = [
-  {
-    name: "Home",
-    href: "/",
-    icon: Home,
-    public: true
-  },
   {
     name: "Assessments",
     href: "/assessments",
@@ -70,7 +64,7 @@ export function Navigation() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/assessments" className="flex items-center space-x-2">
               <div className="h-10 w-10 flex-shrink-0">
                 <Image
                   src="/logo.svg"
@@ -107,6 +101,9 @@ export function Navigation() {
           </div>
 
           <div className="flex items-center space-x-4">
+            {/* Theme Toggle - Always visible */}
+            <ThemeToggle />
+
             {user ? (
               <div className="flex items-center space-x-2">
                 <span className="hidden sm:block text-sm text-muted-foreground">

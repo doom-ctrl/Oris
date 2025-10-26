@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/SupabaseAuthContext'
 import { toast } from 'sonner'
 
@@ -66,7 +67,7 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -75,31 +76,36 @@ export default function SignInPage() {
       >
         {/* Logo and Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-3 hover:opacity-80 transition-opacity mb-6">
+          <Link href="/assessments" className="inline-flex items-center space-x-3 hover:opacity-80 transition-opacity mb-6">
             <div className="h-12 w-12 flex-shrink-0">
               <Image
                 src="/logo.svg"
-                alt="Assessment Manager"
+                alt="Oris"
                 width={48}
                 height={48}
                 className="object-contain"
                 priority
               />
             </div>
-            <span className="text-2xl font-bold text-foreground">Assessment Manager</span>
+            <span className="text-2xl font-bold text-foreground">Oris</span>
           </Link>
-          <h1 className="text-2xl font-bold text-foreground mb-2">Welcome back</h1>
-          <p className="text-muted-foreground">Sign in to your account to continue</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Welcome back</h1>
+          <p className="text-muted-foreground text-lg">Sign in to your account to continue</p>
         </div>
 
         {/* Sign In Form */}
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-6 mb-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <Card className="backdrop-blur-sm border-border/40 mb-6">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl text-center">Sign in to your account</CardTitle>
+            <CardDescription className="text-center">
+              Enter your email and password to access your assessments
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Field */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-foreground">
-                Email address
-              </Label>
+              <Label htmlFor="email">Email address</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -117,9 +123,7 @@ export default function SignInPage() {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-foreground">
-                Password
-              </Label>
+              <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -151,7 +155,7 @@ export default function SignInPage() {
                   onCheckedChange={(checked) => setRememberMe(checked as boolean)}
                   disabled={isLoading}
                 />
-                <Label htmlFor="remember" className="text-sm text-muted-foreground">
+                <Label htmlFor="remember" className="text-sm font-normal">
                   Remember me
                 </Label>
               </div>
@@ -181,43 +185,44 @@ export default function SignInPage() {
                 </div>
               )}
             </Button>
-          </form>
+            </form>
 
-          {/* Social Sign In */}
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
+            {/* Social Sign In */}
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <Separator />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white dark:bg-slate-800 px-2 text-muted-foreground">
-                  Or continue with
-                </span>
+
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => handleSocialSignIn('google')}
+                  disabled={isLoading}
+                  className="w-full"
+                >
+                  <Chrome className="h-4 w-4 mr-2" />
+                  Google
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => handleSocialSignIn('github')}
+                  disabled={isLoading}
+                  className="w-full"
+                >
+                  <Github className="h-4 w-4 mr-2" />
+                  GitHub
+                </Button>
               </div>
             </div>
-
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <Button
-                variant="outline"
-                onClick={() => handleSocialSignIn('google')}
-                disabled={isLoading}
-                className="w-full"
-              >
-                <Chrome className="h-4 w-4 mr-2" />
-                Google
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleSocialSignIn('github')}
-                disabled={isLoading}
-                className="w-full"
-              >
-                <Github className="h-4 w-4 mr-2" />
-                GitHub
-              </Button>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Sign Up Link */}
         <div className="text-center">
