@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
 import { User, Session } from '@supabase/supabase-js'
 import { createBrowserSupabaseClient } from '@/lib/supabase-client'
 import { safeSingle } from '@/lib/supabase-utils'
@@ -26,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const supabase = createBrowserSupabaseClient()
+  const router = useRouter()
 
   const refreshProfile = async () => {
     if (!user) {
@@ -149,6 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
     setSession(null)
     setProfile(null)
+    router.push('/auth/sign-in')
   }
 
   useEffect(() => {
