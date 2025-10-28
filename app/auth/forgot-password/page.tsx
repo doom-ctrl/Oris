@@ -64,18 +64,18 @@ export default function ForgotPasswordPage() {
 
         {/* Logo and Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-3 hover:opacity-80 transition-opacity mb-6">
+          <Link href="/assessments" className="inline-flex items-center space-x-3 hover:opacity-80 transition-opacity mb-6">
             <div className="h-12 w-12 flex-shrink-0">
               <Image
                 src="/logo.svg"
-                alt="Assessment Manager"
+                alt="Oris"
                 width={48}
                 height={48}
                 className="object-contain"
                 priority
               />
             </div>
-            <span className="text-2xl font-bold text-foreground">Assessment Manager</span>
+            <span className="text-2xl font-bold text-foreground">Oris</span>
           </Link>
 
           {!isSubmitted ? (
