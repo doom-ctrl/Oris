@@ -102,9 +102,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string, metadata?: any, provider?: 'google' | 'github') => {
     try {
-      if (provider) {
+      let profileMetadata = metadata
+      let oauthProvider = provider
+
+      if (typeof profileMetadata === 'string' && !oauthProvider) {
+        oauthProvider = profileMetadata as 'google' | 'github'
+        profileMetadata = undefined
+      }
+
+      if (oauthProvider) {
         const { error } = await supabase.auth.signInWithOAuth({
-          provider,
+          provider: oauthProvider,
           options: {
             redirectTo: `${window.location.origin}/assessments`
           }
@@ -115,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email,
           password,
           options: {
-            data: metadata || {}
+            data: profileMetadata || {}
           }
         })
         return { error }

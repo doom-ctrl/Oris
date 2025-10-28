@@ -90,7 +90,7 @@ export default function SignUpPage() {
     setIsLoading(true)
 
     try {
-      const { error } = await signUp('', '', provider)
+      const { error } = await signUp('', '', undefined, provider)
 
       if (error) {
         toast.error(`Failed to sign up with ${provider}`)
