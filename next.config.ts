@@ -1,6 +1,21 @@
 import type { NextConfig } from "next";
 import { securityHeaders } from "./lib/security";
 
+const supabaseOrigin = (() => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!url) return undefined;
+
+  try {
+    return new URL(url).origin;
+  } catch {
+    return undefined;
+  }
+})();
+
+const withSupabase = (sources: string[]) => {
+  return supabaseOrigin ? [...sources, supabaseOrigin] : sources;
+};
+
 const nextConfig: NextConfig = {
   // Optimize for Vercel deployment
   output: 'standalone',
@@ -49,17 +64,17 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Allow inline scripts for auth
               "style-src 'self' 'unsafe-inline'",
-              `img-src 'self' data: blob: ${process.env.NEXT_PUBLIC_SUPABASE_URL}`,
+              ["img-src", "'self'", 'data:', 'blob:', ...withSupabase([])].filter(Boolean).join(' '),
               "font-src 'self' data:",
-              `connect-src 'self' ${process.env.NEXT_PUBLIC_SUPABASE_URL}`,
+              ["connect-src", "'self'", ...withSupabase([])].filter(Boolean).join(' '),
               "frame-ancestors 'none'",
               "form-action 'self'",
               "base-uri 'self'",
               "manifest-src 'self'",
-              `media-src 'self' ${process.env.NEXT_PUBLIC_SUPABASE_URL}`,
+              ["media-src", "'self'", ...withSupabase([])].filter(Boolean).join(' '),
               "object-src 'none'",
               "worker-src 'self'",
-            ].join('; ')
+            ].filter(Boolean).join('; ')
           },
           {
             key: 'X-Frame-Options',

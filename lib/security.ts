@@ -1,27 +1,53 @@
 import { env } from './env'
 import { type NextRequest } from 'next/server'
 
+const supabaseOrigin = (() => {
+  if (!env.NEXT_PUBLIC_SUPABASE_URL) return undefined
+
+  try {
+    return new URL(env.NEXT_PUBLIC_SUPABASE_URL).origin
+  } catch {
+    return undefined
+  }
+})()
+
+const buildDirective = (name: string, sources: string[]) => {
+  const values = sources.filter(Boolean)
+  return values.length ? `${name} ${values.join(' ')}` : ''
+}
+
+const supabaseSources = supabaseOrigin ? [supabaseOrigin] : []
+
 // Content Security Policy
 export const cspHeader = [
   // Default to self for security
   "default-src 'self'",
 
-  // Scripts - allow self and unsafe-inline for development only
+  // Scripts - allow inline scripts that Next.js injects for hydration while
+  // keeping the directive as strict as possible. Next currently injects a few
+  // inline scripts without a nonce, so we explicitly permit them alongside self
+  // hosted scripts. This still keeps third-party execution locked down because
+  // no external origins are whitelisted here.
   process.env.NODE_ENV === 'development'
     ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
-    : "script-src 'self'",
+    : "script-src 'self' 'unsafe-inline'",
 
   // Styles - allow inline styles for TailwindCSS
   "style-src 'self' 'unsafe-inline'",
 
-  // Images - allow self, data URLs, and Supabase storage
-  `img-src 'self' data: blob: ${env.NEXT_PUBLIC_SUPABASE_URL}`,
+  // Images - allow self, data URLs, and Supabase storage when configured
+  buildDirective('img-src', ["'self'", 'data:', 'blob:', ...supabaseSources]),
 
-  // Fonts - allow self and Google Fonts
+  // Fonts - allow self and data URLs
   "font-src 'self' data:",
 
-  // Connect - allow API endpoints and Supabase
-  `connect-src 'self' ${env.NEXT_PUBLIC_SUPABASE_URL}`,
+  // Connect - allow API endpoints, analytics and Supabase when configured
+  buildDirective('connect-src', [
+    "'self'",
+    ...supabaseSources,
+    'https://vitals.vercel-insights.com',
+    'https://app.posthog.com',
+  ]),
 
   // Frame-ancestors - prevent clickjacking
   "frame-ancestors 'none'",
@@ -35,8 +61,8 @@ export const cspHeader = [
   // Manifest - allow self
   "manifest-src 'self'",
 
-  // Media - allow self and Supabase
-  `media-src 'self' ${env.NEXT_PUBLIC_SUPABASE_URL}`,
+  // Media - allow self and Supabase when configured
+  buildDirective('media-src', ["'self'", ...supabaseSources]),
 
   // Object - none for security
   "object-src 'none'",
@@ -45,9 +71,10 @@ export const cspHeader = [
   "worker-src 'self'",
 
   // Upgrade insecure requests in production
-  process.env.NODE_ENV === 'production' ? "upgrade-insecure-requests" : '',
-
-].filter(Boolean).join('; ')
+  process.env.NODE_ENV === 'production' ? 'upgrade-insecure-requests' : '',
+]
+  .filter(Boolean)
+  .join('; ')
 
 // Security Headers
 export const securityHeaders = {

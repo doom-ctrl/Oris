@@ -60,8 +60,17 @@ const parsedEnv = envResult.success ? envResult.data : {
 
 // Add production validation
 if (process.env.NODE_ENV === 'production') {
-  if (!parsedEnv.NEXT_PUBLIC_SUPABASE_URL || !parsedEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    throw new Error('Missing required Supabase environment variables in production')
+  const supabaseVarsPresent = Boolean(
+    parsedEnv.NEXT_PUBLIC_SUPABASE_URL && parsedEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  )
+
+  if (!supabaseVarsPresent) {
+    const message =
+      'Supabase environment variables are not configured. Features depending on Supabase will be disabled.'
+
+    if (typeof window === 'undefined') {
+      console.warn(`[env] ${message}`)
+    }
   }
 }
 

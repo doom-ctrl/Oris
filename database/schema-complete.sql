@@ -293,7 +293,7 @@ CREATE TRIGGER update_planner_sessions_updated_at BEFORE UPDATE ON planner_sessi
 -- ========================================
 
 -- Assessment progress view
-CREATE VIEW assessment_progress AS
+CREATE VIEW assessment_progress WITH (security_invoker = true) AS
 SELECT
     a.id,
     a.user_id,
@@ -316,7 +316,7 @@ LEFT JOIN tasks t ON a.id = t.assessment_id
 GROUP BY a.id, a.user_id, a.title, a.subject, a.status, a.progress, a.due_date, a.created_at;
 
 -- Daily summary view
-CREATE VIEW daily_summary AS
+CREATE VIEW daily_summary WITH (security_invoker = true) AS
 SELECT
     pm.user_id,
     pm.metric_date,
