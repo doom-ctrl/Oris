@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -52,10 +52,10 @@ export default function ForgotPasswordPage() {
         className="w-full max-w-md"
       >
         {/* Back to Sign In */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <Link
             href="/auth/sign-in"
-            className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="inline-flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back to sign in</span>
@@ -63,19 +63,19 @@ export default function ForgotPasswordPage() {
         </div>
 
         {/* Logo and Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-3 hover:opacity-80 transition-opacity mb-6">
-            <div className="h-12 w-12 flex-shrink-0">
+        <div className="text-center mb-6 sm:mb-8">
+          <Link href="/assessments" className="inline-flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity mb-4 sm:mb-6">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0">
               <Image
                 src="/logo.svg"
-                alt="Assessment Manager"
-                width={48}
-                height={48}
+                alt="Oris"
+                width={40}
+                height={40}
                 className="object-contain"
                 priority
               />
             </div>
-            <span className="text-2xl font-bold text-foreground">Assessment Manager</span>
+            <span className="text-xl sm:text-2xl font-bold text-foreground">Oris</span>
           </Link>
 
           {!isSubmitted ? (

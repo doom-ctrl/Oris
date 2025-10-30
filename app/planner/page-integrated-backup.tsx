@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { format, parse, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns"
 import { useAuth } from "@/contexts/SupabaseAuthContext"
 import {
   ChevronLeft,
@@ -21,6 +22,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { FullScreenCalendar } from "@/components/ui/fullscreen-calendar"
 import { MotionWrapper } from "@/components/motion/MotionWrapper"
 import {
   assessmentHelpers,
@@ -190,6 +192,32 @@ export default function PlannerPageIntegrated() {
     return days
   }
 
+  // Transform calendar days for FullScreenCalendar component
+  const transformCalendarData = () => {
+    const days = generateCalendarDays()
+    const calendarData: { day: Date; events: { id: number; name: string; time: string; datetime: string; type?: CalendarEvent['type']; assessmentId?: string }[] }[] = []
+
+    days.forEach(day => {
+      if (day.events.length > 0) {
+        const events = day.events.map(event => ({
+          id: parseInt(event.id),
+          name: event.title,
+          time: event.startTime || 'All day',
+          datetime: `${event.date}T${event.startTime || '00:00'}:00`,
+          type: event.type,
+          assessmentId: event.linkedAssessment
+        }))
+
+        calendarData.push({
+          day: day.date,
+          events
+        })
+      }
+    })
+
+    return calendarData
+  }
+
   // Get date range start and end for fetching
   const getDateRangeStart = (date: Date, mode: ViewMode): string => {
     const start = new Date(date)
@@ -231,14 +259,14 @@ export default function PlannerPageIntegrated() {
   const getEventColor = (type: CalendarEvent["type"], color?: string) => {
     switch (type) {
       case "assessment":
-        return color === "indigo" ? "bg-indigo-100 border-indigo-200 text-indigo-800 dark:bg-indigo-900/20 dark:border-indigo-800 dark:text-indigo-300" :
-               "bg-red-100 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300"
+        return color === "indigo" ? "bg-indigo-500/10 border-indigo-200/50 text-indigo-700 dark:bg-indigo-500/20 dark:border-indigo-800/50 dark:text-indigo-300" :
+               "bg-red-500/10 border-red-200/50 text-red-700 dark:bg-red-500/20 dark:border-red-800/50 dark:text-red-300"
       case "study":
-        return "bg-emerald-100 border-emerald-200 text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300"
+        return "bg-emerald-500/10 border-emerald-200/50 text-emerald-700 dark:bg-emerald-500/20 dark:border-emerald-800/50 dark:text-emerald-300"
       case "milestone":
-        return "bg-amber-100 border-amber-200 text-amber-800 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-300"
+        return "bg-amber-500/10 border-amber-200/50 text-amber-700 dark:bg-amber-500/20 dark:border-amber-800/50 dark:text-amber-300"
       default:
-        return "bg-gray-100 border-gray-200 text-gray-800 dark:bg-gray-900/20 dark:border-gray-800 dark:text-gray-300"
+        return "bg-muted border-border text-muted-foreground dark:bg-muted dark:border-border dark:text-muted-foreground"
     }
   }
 
@@ -308,7 +336,7 @@ export default function PlannerPageIntegrated() {
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Please sign in to view your planner</h1>
             <Button asChild>
-              <a href="/auth">Sign In</a>
+              <a href="/sign-in">Sign In</a>
             </Button>
           </div>
         </div>
@@ -335,17 +363,16 @@ export default function PlannerPageIntegrated() {
         {/* Header Zone */}
         <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
           <div className="container mx-auto px-4 py-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex items-center gap-2 sm:gap-4">
-                <h1 className="text-xl sm:text-2xl font-bold text-foreground">Planner</h1>
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">{formatDateRange()}</span>
-                  <span className="sm:hidden text-xs">{formatDateRange()}</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <h1 className="text-2xl font-bold text-foreground">Planner</h1>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  <span>{formatDateRange()}</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 sm:gap-3">
+              <div className="flex items-center gap-3">
                 {/* Navigation */}
                 <div className="flex items-center gap-1">
                   <Button
@@ -395,23 +422,22 @@ export default function PlannerPageIntegrated() {
         </header>
 
         {/* Calendar Zone */}
-        <main className="container mx-auto px-4 py-6">
+        <main className="flex-1">
           <div className="bg-card rounded-lg border border-border/50 overflow-hidden">
             {/* Calendar Header */}
             <div className="grid grid-cols-7 border-b border-border/50 bg-muted/30">
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                 <div
                   key={day}
-                  className="p-2 sm:p-3 text-center text-xs sm:text-sm font-medium text-foreground border-r border-border/50 last:border-r-0"
+                  className="p-3 text-center text-sm font-medium text-foreground border-r border-border/50 last:border-r-0"
                 >
-                  <span className="hidden sm:inline">{day}</span>
-                  <span className="sm:hidden">{day.slice(0, 1)}</span>
+                  {day}
                 </div>
               ))}
             </div>
 
             {/* Calendar Grid */}
-            <div className={`grid grid-cols-7 ${viewMode === "month" ? "min-h-[400px] sm:min-h-[600px]" : "min-h-[300px] sm:min-h-[400px]"}`}>
+            <div className={`grid grid-cols-7 ${viewMode === "month" ? "min-h-[600px]" : "min-h-[400px]"}`}>
               <AnimatePresence mode="wait">
                 {calendarDays.map((day, index) => (
                   <motion.div
@@ -599,11 +625,11 @@ export default function PlannerPageIntegrated() {
 
         {/* Add Session Modal */}
         <Dialog open={isAddSessionOpen} onOpenChange={setIsAddSessionOpen}>
-          <DialogContent className="max-w-[95vw] sm:max-w-[425px] w-full">
+          <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle className="text-lg sm:text-xl pr-8">Add Study Session</DialogTitle>
+              <DialogTitle>Add Study Session</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+            <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium">Session Title</label>
                 <Input
@@ -680,13 +706,12 @@ export default function PlannerPageIntegrated() {
                 </select>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4">
-                <Button variant="outline" onClick={() => setIsAddSessionOpen(false)} className="w-full sm:w-auto">
+              <div className="flex gap-2 pt-4">
+                <Button variant="outline" onClick={() => setIsAddSessionOpen(false)} className="flex-1">
                   Cancel
                 </Button>
-                <Button onClick={addSession} className="w-full sm:w-auto">
-                  <span className="hidden sm:inline">Add Session</span>
-                  <span className="sm:hidden">Add</span>
+                <Button onClick={addSession} className="flex-1">
+                  Add Session
                 </Button>
               </div>
             </div>

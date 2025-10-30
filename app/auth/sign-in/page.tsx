@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Eye, EyeOff, ArrowRight, Mail, Lock, Github, Chrome } from 'lucide-react'
+import { Eye, EyeOff, ArrowRight, Mail, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -50,24 +50,9 @@ export default function SignInPage() {
     }
   }
 
-  const handleSocialSignIn = async (provider: 'google' | 'github') => {
-    setIsLoading(true)
-
-    try {
-      const { error } = await signIn('', '', provider)
-
-      if (error) {
-        toast.error(`Failed to sign in with ${provider}`)
-      }
-    } catch {
-      toast.error(`An error occurred during ${provider} sign in`)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -75,22 +60,22 @@ export default function SignInPage() {
         className="w-full max-w-md"
       >
         {/* Logo and Header */}
-        <div className="text-center mb-8">
-          <Link href="/assessments" className="inline-flex items-center space-x-3 hover:opacity-80 transition-opacity mb-6">
-            <div className="h-12 w-12 flex-shrink-0">
+        <div className="text-center mb-6 sm:mb-8">
+          <Link href="/assessments" className="inline-flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity mb-4 sm:mb-6">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0">
               <Image
                 src="/logo.svg"
                 alt="Oris"
-                width={48}
-                height={48}
+                width={40}
+                height={40}
                 className="object-contain"
                 priority
               />
             </div>
-            <span className="text-2xl font-bold text-foreground">Oris</span>
+            <span className="text-xl sm:text-2xl font-bold text-foreground">Oris</span>
           </Link>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Welcome back</h1>
-          <p className="text-muted-foreground text-lg">Sign in to your account to continue</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Welcome back</h1>
+          <p className="text-muted-foreground text-sm sm:text-lg">Sign in to your account to continue</p>
         </div>
 
         {/* Sign In Form */}
@@ -147,7 +132,7 @@ export default function SignInPage() {
             </div>
 
             {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="remember"
@@ -161,7 +146,7 @@ export default function SignInPage() {
               </div>
               <Link
                 href="/auth/forgot-password"
-                className="text-sm text-primary hover:text-primary/80 transition-colors"
+                className="text-sm text-primary hover:text-primary/80 transition-colors text-left sm:text-right"
               >
                 Forgot password?
               </Link>
@@ -187,41 +172,7 @@ export default function SignInPage() {
             </Button>
             </form>
 
-            {/* Social Sign In */}
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <Separator />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => handleSocialSignIn('google')}
-                  disabled={isLoading}
-                  className="w-full"
-                >
-                  <Chrome className="h-4 w-4 mr-2" />
-                  Google
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => handleSocialSignIn('github')}
-                  disabled={isLoading}
-                  className="w-full"
-                >
-                  <Github className="h-4 w-4 mr-2" />
-                  GitHub
-                </Button>
-              </div>
-            </div>
-          </CardContent>
+            </CardContent>
         </Card>
 
         {/* Sign Up Link */}

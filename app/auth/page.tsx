@@ -22,23 +22,23 @@ export default function AuthPage() {
 
   return (
     <MotionWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4 sm:p-6 lg:p-8">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <Link href="/assessments" className="inline-flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="h-12 w-12 flex-shrink-0">
+          <div className="text-center mb-6 sm:mb-8">
+            <Link href="/assessments" className="inline-flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0">
                 <Image
                   src="/logo.svg"
                   alt="Oris"
-                  width={48}
-                  height={48}
+                  width={40}
+                  height={40}
                   className="object-contain"
                   priority
                 />
               </div>
-              <span className="text-2xl font-bold text-foreground">Oris</span>
+              <span className="text-xl sm:text-2xl font-bold text-foreground">Oris</span>
             </Link>
-            <p className="mt-4 text-muted-foreground text-lg">
+            <p className="mt-3 sm:mt-4 text-muted-foreground text-sm sm:text-lg">
               Your intelligent assessment and progress management platform
             </p>
           </div>
@@ -122,7 +122,7 @@ export default function AuthPage() {
                 message: 'text-sm',
               }
             }}
-            providers={['google', 'github']}
+            providers={[]}
             redirectTo={redirectUrl}
             view="sign_in"
             showLinks={true}

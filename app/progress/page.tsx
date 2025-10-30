@@ -267,28 +267,30 @@ export default function ProgressPageIntegrated() {
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         {/* Header Zone */}
         <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex items-center justify-between">
+          <div className="container mx-auto px-4 py-4 sm:py-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-bold text-foreground">Progress Overview</h1>
-                <p className="text-muted-foreground">Your performance and trends at a glance</p>
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Progress Overview</h1>
+                <p className="text-sm sm:text-base text-muted-foreground">Your performance and trends at a glance</p>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 {/* Date Range Filter */}
                 <div className="flex gap-1 p-1 bg-muted/50 rounded-md">
                   {[
-                    { value: "week", label: "This Week" },
-                    { value: "month", label: "This Month" },
-                    { value: "term", label: "This Term" }
+                    { value: "week", label: "This Week", shortLabel: "Week" },
+                    { value: "month", label: "This Month", shortLabel: "Month" },
+                    { value: "term", label: "This Term", shortLabel: "Term" }
                   ].map((range) => (
                     <Button
                       key={range.value}
                       variant={dateRange === range.value ? "default" : "ghost"}
                       size="sm"
                       onClick={() => setDateRange(range.value as DateRange)}
+                      className="text-xs sm:text-sm"
                     >
-                      {range.label}
+                      <span className="hidden sm:inline">{range.label}</span>
+                      <span className="sm:hidden">{range.shortLabel}</span>
                     </Button>
                   ))}
                 </div>

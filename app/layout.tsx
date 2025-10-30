@@ -5,6 +5,9 @@ import { Navigation } from "@/components/layout/navigation";
 import { AuthProvider } from "@/contexts/SupabaseAuthContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
+import { ErrorBoundary } from "@/components/monitoring/ErrorTracker";
+import { AnalyticsProvider } from "@/components/monitoring/AnalyticsProvider";
+import { PerformanceTracker } from "@/components/monitoring/ErrorTracker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -85,23 +88,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AuthProvider>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <html lang="en" suppressHydrationWarning>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            <Navigation />
-            {children}
-            <Toaster />
-          </body>
-        </html>
-      </ThemeProvider>
-    </AuthProvider>
+        <ErrorBoundary>
+          <AnalyticsProvider>
+            <PerformanceTracker />
+            <AuthProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Navigation />
+                {children}
+                <Toaster />
+              </ThemeProvider>
+            </AuthProvider>
+          </AnalyticsProvider>
+        </ErrorBoundary>
+      </body>
+    </html>
   );
 }

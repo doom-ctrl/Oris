@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, Session } from '@supabase/supabase-js'
-import { createBrowserSupabaseClient } from '@/lib/supabase-client'
+import { createBrowserSupabaseClient, createCustomSupabaseClient, isSupabaseClientAvailable } from '@/lib/supabase-client'
+import { env, isSupabaseConfigured } from '@/lib/env'
 import { safeSingle } from '@/lib/supabase-utils'
 import type { Profile } from '@/types/database'
 
@@ -11,11 +12,22 @@ interface AuthContextType {
   session: Session | null
   profile: Profile | null
   isLoading: boolean
-  signIn: (email: string, password: string, provider?: 'google' | 'github') => Promise<{ error: any }>
-  signUp: (email: string, password: string, metadata?: any, provider?: 'google' | 'github') => Promise<{ error: any }>
+  signIn: (email: string, password: string, options?: SignInOptions) => Promise<{ error: any }>
+  signUp: (email: string, password: string, metadata?: any, options?: SignUpOptions) => Promise<{ error: any }>
   resetPassword: (email: string) => Promise<{ error: any }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
+  updateProfile: (updates: Partial<Profile>) => Promise<{ error: any; data?: Profile }>
+}
+
+interface SignInOptions {
+  redirectTo?: string
+  createUser?: boolean
+}
+
+interface SignUpOptions {
+  redirectTo?: string
+  data?: any
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -25,7 +37,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isConfigured, setIsConfigured] = useState(isSupabaseConfigured())
   const supabase = createBrowserSupabaseClient()
+
+  // If Supabase is not configured, show a helpful message
+  if (!isConfigured || !supabase) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Not Configured</h2>
+          <p className="text-gray-600 mb-6">
+            Please add your Supabase credentials to the <code className="bg-gray-100 px-2 py-1 rounded">.env</code> file:
+          </p>
+          <div className="text-left bg-gray-50 p-4 rounded-lg mb-6">
+            <p className="font-mono text-sm text-gray-700 mb-2">NEXT_PUBLIC_SUPABASE_URL=your_supabase_url</p>
+            <p className="font-mono text-sm text-gray-700">NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key</p>
+          </div>
+          <p className="text-sm text-gray-500">
+            You can find these in your Supabase dashboard under Settings → API
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   const refreshProfile = async () => {
     if (!user) {
@@ -78,48 +112,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const signIn = async (email: string, password: string, provider?: 'google' | 'github') => {
+  const signIn = async (email: string, password: string, options?: SignInOptions) => {
     try {
-      if (provider) {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider,
-          options: {
-            redirectTo: `${window.location.origin}/assessments`
-          }
-        })
-        return { error }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        })
-        return { error }
-      }
+      const redirectTo = options?.redirectTo || `${env.NEXT_PUBLIC_APP_URL}/assessments`
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+        options: {
+          redirectTo
+        }
+      })
+      return { error }
     } catch (error) {
       return { error }
     }
   }
 
-  const signUp = async (email: string, password: string, metadata?: any, provider?: 'google' | 'github') => {
+  const signUp = async (email: string, password: string, metadata?: any, options?: SignUpOptions) => {
     try {
-      if (provider) {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider,
-          options: {
-            redirectTo: `${window.location.origin}/assessments`
-          }
-        })
-        return { error }
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: metadata || {}
-          }
-        })
-        return { error }
-      }
+      const redirectTo = options?.redirectTo || `${env.NEXT_PUBLIC_APP_URL}/auth/sign-in`
+
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata || {},
+          redirectTo
+        }
+      })
+      return { error }
     } catch (error) {
       return { error }
     }
@@ -128,7 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const resetPassword = async (email: string) => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`
+        redirectTo: `${env.NEXT_PUBLIC_APP_URL}/auth/reset-password`
       })
       return { error }
     } catch (error) {
@@ -141,6 +163,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
     setSession(null)
     setProfile(null)
+    // Redirect to custom sign-in page
+    if (typeof window !== 'undefined') {
+      window.location.href = '/auth/sign-in'
+    }
   }
 
   useEffect(() => {

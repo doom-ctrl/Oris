@@ -17,7 +17,18 @@
       "Bash(npx expo start:*)",
       "Bash(rm:*)",
       "Bash(npx create-expo-app:*)",
-      "Bash(npx expo install:*)"
+      "Bash(npx expo install:*)",
+      "WebFetch(domain:jougnplpmfoiajhlnthp.supabase.co)",
+      "Bash(taskkill:*)",
+      "Bash(git add:*)",
+      "Bash(git reset:*)",
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(git push:*)",
+      "Bash(git submodule:*)",
+      "Bash(cmd /c \"taskkill /PID 18724 /F\")",
+      "Bash(powershell -Command \"Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue\")",
+      "Bash(cmd:*)"
     ],
     "deny": [],
     "ask": []

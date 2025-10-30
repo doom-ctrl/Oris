@@ -207,4 +207,257 @@
   .scroll-smooth {
     scroll-behavior: smooth;
   }
+
+  /* Mobile-first responsive utilities */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .safe-area-all {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  /* Touch-friendly tap targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent zoom on input focus on iOS */
+  .input-no-zoom {
+    font-size: 16px;
+  }
+
+  /* Mobile viewport fix */
+  .mobile-viewport-fix {
+    width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Responsive typography */
+  .text-responsive-xs {
+    font-size: clamp(0.625rem, 0.6rem + 0.125vw, 0.75rem);
+  }
+
+  .text-responsive-sm {
+    font-size: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  }
+
+  .text-responsive-base {
+    font-size: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  }
+
+  .text-responsive-lg {
+    font-size: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  }
+
+  .text-responsive-xl {
+    font-size: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  }
+
+  .text-responsive-2xl {
+    font-size: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  }
+
+  .text-responsive-3xl {
+    font-size: clamp(1.5rem, 1.3rem + 1vw, 1.875rem);
+  }
+
+  /* Responsive spacing */
+  .space-responsive-xs {
+    margin: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);
+  }
+
+  .space-responsive-sm {
+    margin: clamp(0.5rem, 0.4rem + 0.5vw, 1rem);
+  }
+
+  .space-responsive-md {
+    margin: clamp(1rem, 0.8rem + 1vw, 1.5rem);
+  }
+
+  .space-responsive-lg {
+    margin: clamp(1.5rem, 1.2rem + 1.5vw, 2rem);
+  }
+
+  /* Hide elements on mobile but show on desktop */
+  .hidden-mobile {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .hidden-mobile {
+      display: revert;
+    }
+  }
+
+  /* Show elements on mobile but hide on desktop */
+  .mobile-only {
+    display: revert;
+  }
+
+  @media (min-width: 640px) {
+    .mobile-only {
+      display: none;
+    }
+  }
+
+  /* Optimize images for mobile */
+  .img-responsive {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  /* Better form inputs for mobile */
+  .input-mobile {
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  /* Horizontal scroll containers for mobile */
+  .scroll-x-mobile {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scroll-x-mobile::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Sticky positioning with mobile consideration */
+  .sticky-mobile {
+    position: -webkit-sticky;
+    position: sticky;
+  }
+
+  /* Better button spacing for touch */
+  .button-group-mobile > * {
+    margin: 0.25rem;
+  }
+
+  /* Card hover effects adapted for touch */
+  .card-touch {
+    transition: transform 0.2s ease;
+  }
+
+  .card-touch:active {
+    transform: scale(0.98);
+  }
+
+  /* Loading states optimized for mobile */
+  .skeleton-mobile {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+  }
+
+  @keyframes loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Zoom-responsive containers */
+  .zoom-responsive {
+    container-type: inline-size;
+  }
+
+  @container (max-width: 400px) {
+    .zoom-responsive .text-sm {
+      font-size: 0.75rem;
+    }
+    .zoom-responsive .text-base {
+      font-size: 0.875rem;
+    }
+    .zoom-responsive .text-lg {
+      font-size: 1rem;
+    }
+    .zoom-responsive .text-xl {
+      font-size: 1.125rem;
+    }
+    .zoom-responsive .text-2xl {
+      font-size: 1.25rem;
+    }
+    .zoom-responsive .p-4 {
+      padding: 0.75rem;
+    }
+    .zoom-responsive .p-6 {
+      padding: 1rem;
+    }
+  }
+
+  /* Prevent horizontal overflow on zoom */
+  .overflow-zoom-safe {
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Dialog responsive fixes for zoom */
+  .dialog-zoom-safe {
+    max-width: min(95vw, 600px);
+    width: auto;
+    min-width: 280px;
+  }
+
+  /* Button group responsive for zoom */
+  .button-group-zoom-safe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .button-group-zoom-safe > * {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  /* Text input responsive for zoom */
+  .input-zoom-safe {
+    width: 100%;
+    min-width: 0;
+    font-size: 0.875rem;
+  }
+
+  /* Textarea responsive for zoom */
+  .textarea-zoom-safe {
+    width: 100%;
+    min-width: 0;
+    min-height: 120px;
+    resize: vertical;
+    font-size: 0.875rem;
+  }
+
+  /* Form layout responsive for zoom */
+  .form-zoom-safe {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  @media (min-width: 640px) {
+    .form-zoom-safe {
+      max-width: 500px;
+    }
+  }
 }

@@ -583,12 +583,12 @@ function AssessmentsPage() {
         {/* Header Bar */}
         <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
           <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center gap-4">
-                <h1 className="text-2xl font-bold text-foreground">Your Assessments</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground">Your Assessments</h1>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 {/* Search */}
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -596,7 +596,7 @@ function AssessmentsPage() {
                     placeholder="Search assessments..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 w-64 bg-background/50"
+                    className="pl-10 w-full sm:w-64 bg-background/50"
                   />
                 </div>
 
@@ -608,7 +608,7 @@ function AssessmentsPage() {
                       variant={filter === filterOption ? "default" : "ghost"}
                       size="sm"
                       onClick={() => setFilter(filterOption)}
-                      className="capitalize"
+                      className="capitalize text-xs sm:text-sm"
                     >
                       {filterOption}
                     </Button>
@@ -619,25 +619,27 @@ function AssessmentsPage() {
                 <Button
                   variant="outline"
                   onClick={() => setIsAiModalOpen(true)}
-                  className="gap-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5"
+                  className="gap-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 text-xs sm:text-sm"
                 >
                   <Sparkles className="h-4 w-4" />
-                  AI Import
+                  <span className="hidden sm:inline">AI Import</span>
+                  <span className="sm:hidden">AI</span>
                 </Button>
 
                 {/* Add Assessment */}
                 <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
                   <DialogTrigger asChild>
-                    <Button className="gap-2">
+                    <Button className="gap-2 text-xs sm:text-sm">
                       <Plus className="h-4 w-4" />
-                      New Assessment
+                      <span className="hidden sm:inline">New Assessment</span>
+                      <span className="sm:hidden">Add</span>
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
+                  <DialogContent className="max-w-[95vw] sm:max-w-[425px] w-full">
                     <DialogHeader>
-                      <DialogTitle>Create New Assessment</DialogTitle>
+                      <DialogTitle className="text-lg sm:text-xl pr-8">Create New Assessment</DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                       <div>
                         <label className="text-sm font-medium">Title</label>
                         <Input
@@ -670,12 +672,13 @@ function AssessmentsPage() {
                           onChange={(e) => setNewAssessment(prev => ({ ...prev, dueDate: e.target.value }))}
                         />
                       </div>
-                      <div className="flex gap-2 pt-4">
-                        <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4">
+                        <Button variant="outline" onClick={() => setIsCreateModalOpen(false)} className="w-full sm:w-auto">
                           Cancel
                         </Button>
-                        <Button onClick={createAssessment}>
-                          Create Assessment
+                        <Button onClick={createAssessment} className="w-full sm:w-auto">
+                          <span className="hidden sm:inline">Create Assessment</span>
+                          <span className="sm:hidden">Create</span>
                         </Button>
                       </div>
                     </div>
@@ -684,33 +687,33 @@ function AssessmentsPage() {
 
                 {/* AI Import Modal */}
                 <Dialog open={isAiModalOpen} onOpenChange={setIsAiModalOpen}>
-                  <DialogContent className="sm:max-w-[600px]">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-primary" />
-                        AI Assessment Import
+                  <DialogContent className="dialog-zoom-safe zoom-responsive overflow-zoom-safe">
+                    <DialogHeader className="pb-4">
+                      <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl pr-8">
+                        <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
+                        <span className="truncate">AI Assessment Import</span>
                       </DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="space-y-4 max-h-[70vh] overflow-y-auto form-zoom-safe">
                       {/* Instructions */}
-                      <div className="bg-muted/30 rounded-lg p-4">
-                        <h4 className="font-medium mb-2">Smart Input Examples:</h4>
-                        <div className="text-sm text-muted-foreground space-y-2">
+                      <div className="bg-muted/30 rounded-lg p-3 sm:p-4">
+                        <h4 className="font-medium mb-2 text-sm sm:text-base">Smart Input Examples:</h4>
+                        <div className="text-xs sm:text-sm text-muted-foreground space-y-2">
                           <div className="space-y-1">
                             <p className="font-medium text-foreground">Natural Language:</p>
-                            <p>&quot;I have a science report due next week about cells&quot;</p>
+                            <p className="break-words">&quot;I have a science report due next week about cells&quot;</p>
                           </div>
                           <div className="space-y-1">
                             <p className="font-medium text-foreground">Multiple Assessments:</p>
-                            <p>&quot;Math homework on Friday and history essay due Monday&quot;</p>
+                            <p className="break-words">&quot;Math homework on Friday and history essay due Monday&quot;</p>
                           </div>
                           <div className="space-y-1">
                             <p className="font-medium text-foreground">Relative Dates:</p>
-                            <p>&quot;Presentation in two weeks, study guide due Friday&quot;</p>
+                            <p className="break-words">&quot;Presentation in two weeks, study guide due Friday&quot;</p>
                           </div>
                           <div className="space-y-1">
                             <p className="font-medium text-foreground">Traditional Format:</p>
-                            <p>&quot;Assessment: English Essay, Due: Nov 15, Tasks: Research, Write, Edit&quot;</p>
+                            <p className="break-words">&quot;Assessment: English Essay, Due: Nov 15, Tasks: Research, Write, Edit&quot;</p>
                           </div>
                         </div>
                       </div>
@@ -734,7 +737,7 @@ Assessment: English Essay on Shakespeare
 Due: November 15, 2025
 Subject: English Literature
 Tasks: Research, Write draft, Edit, Submit"
-                          className="min-h-[200px] resize-none"
+                          className="textarea-zoom-safe min-h-[150px] sm:min-h-[200px] resize-none text-sm"
                           disabled={isAiProcessing}
                         />
                       </div>
@@ -743,7 +746,7 @@ Tasks: Research, Write draft, Edit, Submit"
                       {aiError && (
                         <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
                           <AlertCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-destructive">{aiError}</p>
+                          <p className="text-sm text-destructive break-words">{aiError}</p>
                         </div>
                       )}
 
@@ -751,12 +754,12 @@ Tasks: Research, Write draft, Edit, Submit"
                       {aiSuccess && (
                         <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
                           <div className="h-4 w-4 rounded-full bg-green-500 flex-shrink-0" />
-                          <p className="text-sm text-green-700 dark:text-green-300">{aiSuccess}</p>
+                          <p className="text-sm text-green-700 dark:text-green-300 break-words">{aiSuccess}</p>
                         </div>
                       )}
 
                       {/* Action Buttons */}
-                      <div className="flex gap-2 pt-4">
+                      <div className="button-group-zoom-safe pt-4">
                         <Button
                           variant="outline"
                           onClick={() => {
@@ -766,23 +769,26 @@ Tasks: Research, Write draft, Edit, Submit"
                             setAiSuccess(null)
                           }}
                           disabled={isAiProcessing}
+                          className="w-full sm:w-auto"
                         >
                           Cancel
                         </Button>
                         <Button
                           onClick={importFromAI}
                           disabled={!aiText.trim() || isAiProcessing}
-                          className="gap-2"
+                          className="gap-2 w-full sm:w-auto"
                         >
                           {isAiProcessing ? (
                             <>
                               <Loader2 className="h-4 w-4 animate-spin" />
-                              Processing...
+                              <span className="hidden sm:inline">Processing...</span>
+                              <span className="sm:hidden">Processing</span>
                             </>
                           ) : (
                             <>
                               <Sparkles className="h-4 w-4" />
-                              Create Assessment
+                              <span className="hidden sm:inline">Create Assessment</span>
+                              <span className="sm:hidden">Create</span>
                             </>
                           )}
                         </Button>
@@ -793,11 +799,11 @@ Tasks: Research, Write draft, Edit, Submit"
 
                 {/* Edit Assessment Modal */}
                 <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                  <DialogContent className="sm:max-w-[425px]">
+                  <DialogContent className="max-w-[95vw] sm:max-w-[425px] w-full">
                     <DialogHeader>
-                      <DialogTitle>Edit Assessment</DialogTitle>
+                      <DialogTitle className="text-lg sm:text-xl pr-8">Edit Assessment</DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                       <div>
                         <label className="text-sm font-medium">Title</label>
                         <Input
@@ -830,12 +836,13 @@ Tasks: Research, Write draft, Edit, Submit"
                           onChange={(e) => setEditingAssessment(prev => prev ? {...prev, dueDate: e.target.value} : null)}
                         />
                       </div>
-                      <div className="flex gap-2 pt-4">
-                        <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4">
+                        <Button variant="outline" onClick={() => setIsEditModalOpen(false)} className="w-full sm:w-auto">
                           Cancel
                         </Button>
-                        <Button onClick={updateAssessment} disabled={!editingAssessment?.title.trim()}>
-                          Update Assessment
+                        <Button onClick={updateAssessment} disabled={!editingAssessment?.title.trim()} className="w-full sm:w-auto">
+                          <span className="hidden sm:inline">Update Assessment</span>
+                          <span className="sm:hidden">Update</span>
                         </Button>
                       </div>
                     </div>
@@ -844,11 +851,11 @@ Tasks: Research, Write draft, Edit, Submit"
 
                 {/* Edit Task Modal */}
                 <Dialog open={isEditTaskModalOpen} onOpenChange={setIsEditTaskModalOpen}>
-                  <DialogContent className="sm:max-w-[425px]">
+                  <DialogContent className="max-w-[95vw] sm:max-w-[425px] w-full">
                     <DialogHeader>
-                      <DialogTitle>Edit Task</DialogTitle>
+                      <DialogTitle className="text-lg sm:text-xl pr-8">Edit Task</DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                       <div>
                         <label className="text-sm font-medium">Task Title</label>
                         <Input
@@ -877,12 +884,13 @@ Tasks: Research, Write draft, Edit, Submit"
                           Mark as completed
                         </label>
                       </div>
-                      <div className="flex gap-2 pt-4">
-                        <Button variant="outline" onClick={() => setIsEditTaskModalOpen(false)}>
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4">
+                        <Button variant="outline" onClick={() => setIsEditTaskModalOpen(false)} className="w-full sm:w-auto">
                           Cancel
                         </Button>
-                        <Button onClick={updateTask} disabled={!editingTask?.title.trim()}>
-                          Update Task
+                        <Button onClick={updateTask} disabled={!editingTask?.title.trim()} className="w-full sm:w-auto">
+                          <span className="hidden sm:inline">Update Task</span>
+                          <span className="sm:hidden">Update</span>
                         </Button>
                       </div>
                     </div>
@@ -923,7 +931,7 @@ Tasks: Research, Write draft, Edit, Submit"
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
                 >
                   {filteredAssessments.map((assessment, index) => {
                     const daysUntilDue = getDaysUntilDue(assessment.dueDate)
@@ -943,17 +951,17 @@ Tasks: Research, Write draft, Edit, Submit"
                           isUrgent ? 'ring-2 ring-orange-200 dark:ring-orange-800/50' : ''
                         } ${assessment.status === 'completed' ? 'opacity-75' : ''}`}>
                           <CardHeader className="pb-3">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <CardTitle className="text-lg font-semibold line-clamp-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <CardTitle className="text-base sm:text-lg font-semibold line-clamp-2">
                                   {assessment.title}
                                 </CardTitle>
-                                <p className="text-sm text-muted-foreground mt-1">
+                                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                                   {assessment.subject}
                                 </p>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <Badge className={getStatusColor(assessment.status)}>
+                              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                                <Badge className={`text-xs ${getStatusColor(assessment.status)}`}>
                                   {assessment.status}
                                 </Badge>
                                 <Button
@@ -963,9 +971,9 @@ Tasks: Research, Write draft, Edit, Submit"
                                     e.stopPropagation()
                                     startEditAssessment(assessment)
                                   }}
-                                  className="h-8 w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10"
                                 >
-                                  <Edit3 className="h-4 w-4" />
+                                  <Edit3 className="h-3 w-3 sm:h-4 sm:w-4" />
                                 </Button>
                                 <Button
                                   variant="ghost"
@@ -974,40 +982,40 @@ Tasks: Research, Write draft, Edit, Submit"
                                     e.stopPropagation()
                                     deleteAssessment(assessment.id)
                                   }}
-                                  className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                                 >
-                                  <Trash2 className="h-4 w-4" />
+                                  <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                                 </Button>
                               </div>
                             </div>
                           </CardHeader>
 
-                          <CardContent className="space-y-4">
-                            <p className="text-sm text-muted-foreground line-clamp-2">
+                          <CardContent className="space-y-3 sm:space-y-4">
+                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
                               {assessment.description}
                             </p>
 
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Calendar className="h-4 w-4" />
+                            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                              <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                               <span>{new Date(assessment.dueDate).toLocaleDateString()}</span>
                               {isUrgent && (
-                                <Badge variant="outline" className="text-orange-600 border-orange-200">
+                                <Badge variant="outline" className="text-xs text-orange-600 border-orange-200">
                                   {daysUntilDue === 0 ? 'Due today' : `${daysUntilDue} days left`}
                                 </Badge>
                               )}
                             </div>
 
                             <div className="space-y-2">
-                              <div className="flex items-center justify-between text-sm">
+                              <div className="flex items-center justify-between text-xs sm:text-sm">
                                 <span>Progress</span>
                                 <span>{assessment.progress}%</span>
                               </div>
-                              <Progress value={assessment.progress} className="h-2" />
+                              <Progress value={assessment.progress} className="h-1.5 sm:h-2" />
                             </div>
 
-                            <div className="flex items-center justify-between text-sm text-muted-foreground">
+                            <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground">
                               <span className="flex items-center gap-1">
-                                <CheckCircle className="h-4 w-4" />
+                                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                                 {assessment.tasks.filter(t => t.completed).length}/{assessment.tasks.length} tasks
                               </span>
                             </div>
