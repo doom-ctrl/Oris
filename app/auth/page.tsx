@@ -20,6 +20,29 @@ export default function AuthPage() {
     }
   }, [])
 
+  // Show error message if Supabase is not configured
+  if (!supabase) {
+    return (
+      <MotionWrapper>
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+          <Card className="max-w-md backdrop-blur-sm border-border/40">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl text-center">Configuration Error</CardTitle>
+              <CardDescription className="text-center">
+                Authentication service is not properly configured
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-sm text-muted-foreground">
+                Please check your environment variables and ensure Supabase is properly configured.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </MotionWrapper>
+    )
+  }
+
   return (
     <MotionWrapper>
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4 sm:p-6 lg:p-8">

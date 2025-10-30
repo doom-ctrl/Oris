@@ -109,8 +109,8 @@ export function getClientIP(request: NextRequest): string {
     return clientIP.trim()
   }
 
-  // Fallback to request IP
-  return request.ip || 'unknown'
+  // Fallback when no IP headers are found
+  return 'unknown'
 }
 
 // Validate and sanitize input

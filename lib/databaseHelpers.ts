@@ -11,14 +11,20 @@ import type {
   Profile
 } from '@/types/database'
 
-// Create a single Supabase client for client-side operations
-const supabase = createBrowserSupabaseClient()
+// Helper function to get Supabase client with error handling
+function getSupabaseClient() {
+  const client = createBrowserSupabaseClient()
+  if (!client) {
+    throw new Error('Supabase client is not available - please check your configuration')
+  }
+  return client
+}
 
 // Assessment helpers
 export const assessmentHelpers = {
   // Get all assessments for a user
   async getUserAssessments(userId: string): Promise<Assessment[]> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseClient()
       .from('assessments')
       .select('*')
       .eq('user_id', userId)
@@ -33,7 +39,7 @@ export const assessmentHelpers = {
 
   // Get assessment with progress
   async getAssessmentProgress(userId: string): Promise<AssessmentProgress[]> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseClient()
       .from('assessment_progress')
       .select('*')
       .eq('user_id', userId)
@@ -45,7 +51,7 @@ export const assessmentHelpers = {
 
   // Create new assessment
   async createAssessment(assessment: Omit<Assessment, 'id' | 'user_id' | 'created_at' | 'updated_at'>, userId: string): Promise<Assessment> {
-    const insertResult = await supabase
+    const insertResult = await getSupabaseClient()
       .from('assessments')
       .insert({ ...assessment, user_id: userId })
       .select()
@@ -64,7 +70,7 @@ export const assessmentHelpers = {
 
   // Update assessment
   async updateAssessment(id: string, updates: Partial<Assessment>): Promise<Assessment> {
-    const updateResult = await supabase
+    const updateResult = await getSupabaseClient()
       .from('assessments')
       .update(updates)
       .eq('id', id)
@@ -84,7 +90,7 @@ export const assessmentHelpers = {
 
   // Delete assessment
   async deleteAssessment(id: string): Promise<void> {
-    const { error } = await supabase
+    const { error } = await getSupabaseClient()
       .from('assessments')
       .delete()
       .eq('id', id)
@@ -100,7 +106,7 @@ export const assessmentHelpers = {
 export const taskHelpers = {
   // Get tasks for an assessment
   async getAssessmentTasks(assessmentId: string): Promise<Task[]> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseClient()
       .from('tasks')
       .select('*')
       .eq('assessment_id', assessmentId)
@@ -115,7 +121,7 @@ export const taskHelpers = {
 
   // Get all tasks for a user
   async getUserTasks(userId: string): Promise<Task[]> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseClient()
       .from('tasks')
       .select('*')
       .eq('user_id', userId)
@@ -130,7 +136,7 @@ export const taskHelpers = {
 
   // Create new task
   async createTask(task: Omit<Task, 'id' | 'user_id' | 'created_at' | 'updated_at'>, userId: string): Promise<Task> {
-    const insertResult = await supabase
+    const insertResult = await getSupabaseClient()
       .from('tasks')
       .insert({ ...task, user_id: userId })
       .select()
@@ -149,7 +155,7 @@ export const taskHelpers = {
 
   // Update task
   async updateTask(id: string, updates: Partial<Task>): Promise<Task> {
-    const updateResult = await supabase
+    const updateResult = await getSupabaseClient()
       .from('tasks')
       .update(updates)
       .eq('id', id)
@@ -170,7 +176,7 @@ export const taskHelpers = {
   // Delete task
   async deleteTask(id: string): Promise<void> {
     
-    const { error } = await supabase
+    const { error } = await getSupabaseClient()
       .from('tasks')
       .delete()
       .eq('id', id)
@@ -185,7 +191,7 @@ export const taskHelpers = {
   async toggleTaskCompletion(id: string): Promise<Task> {
     try {
       // First get current task without .single() to avoid 406 errors
-      const { data: tasks, error: fetchError } = await supabase
+      const { data: tasks, error: fetchError } = await getSupabaseClient()
         .from('tasks')
         .select('completed')
         .eq('id', id)
@@ -198,7 +204,7 @@ export const taskHelpers = {
       const currentTask = tasks[0]
 
       // Toggle completion
-      const { data: updatedTasks, error } = await supabase
+      const { data: updatedTasks, error } = await getSupabaseClient()
         .from('tasks')
         .update({ completed: !currentTask.completed })
         .eq('id', id)
@@ -222,7 +228,7 @@ export const progressHelpers = {
   // Get progress metrics for a date range
   async getProgressMetrics(userId: string, startDate: string, endDate: string): Promise<ProgressMetric[]> {
     
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseClient()
       .from('progress_metrics')
       .select('*')
       .eq('user_id', userId)
@@ -237,7 +243,7 @@ export const progressHelpers = {
   // Get daily summary
   async getDailySummary(userId: string, startDate: string, endDate: string): Promise<DailySummary[]> {
     
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseClient()
       .from('daily_summary')
       .select('*')
       .eq('user_id', userId)
@@ -251,7 +257,7 @@ export const progressHelpers = {
 
   // Create or update progress metric
   async upsertProgressMetric(metric: Omit<ProgressMetric, 'id' | 'created_at'>): Promise<ProgressMetric> {
-    const insertResult = await supabase
+    const insertResult = await getSupabaseClient()
       .from('progress_metrics')
       .upsert(metric)
       .select()
@@ -271,7 +277,7 @@ export const plannerHelpers = {
   // Get planner sessions for a date range
   async getPlannerSessions(userId: string, startDate: string, endDate: string): Promise<PlannerSession[]> {
     
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseClient()
       .from('planner_sessions')
       .select('*')
       .eq('user_id', userId)
@@ -285,7 +291,7 @@ export const plannerHelpers = {
 
   // Create new planner session
   async createPlannerSession(session: Omit<PlannerSession, 'id' | 'user_id' | 'created_at' | 'updated_at'>, userId: string): Promise<PlannerSession> {
-    const insertResult = await supabase
+    const insertResult = await getSupabaseClient()
       .from('planner_sessions')
       .insert({ ...session, user_id: userId })
       .select()
@@ -301,7 +307,7 @@ export const plannerHelpers = {
 
   // Update planner session
   async updatePlannerSession(id: string, updates: Partial<PlannerSession>): Promise<PlannerSession> {
-    const updateResult = await supabase
+    const updateResult = await getSupabaseClient()
       .from('planner_sessions')
       .update(updates)
       .eq('id', id)
@@ -319,7 +325,7 @@ export const plannerHelpers = {
   // Delete planner session
   async deletePlannerSession(id: string): Promise<void> {
     
-    const { error } = await supabase
+    const { error } = await getSupabaseClient()
       .from('planner_sessions')
       .delete()
       .eq('id', id)
@@ -333,7 +339,7 @@ export const subjectHelpers = {
   // Get all subjects for a user
   async getUserSubjects(userId: string): Promise<Subject[]> {
     
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseClient()
       .from('subjects')
       .select('*')
       .eq('user_id', userId)
@@ -346,7 +352,7 @@ export const subjectHelpers = {
 
   // Create new subject
   async createSubject(subject: Omit<Subject, 'id' | 'user_id' | 'created_at'>, userId: string): Promise<Subject> {
-    const insertResult = await supabase
+    const insertResult = await getSupabaseClient()
       .from('subjects')
       .insert({ ...subject, user_id: userId })
       .select()
@@ -367,7 +373,7 @@ export const profileHelpers = {
   async getUserProfile(userId: string): Promise<Profile | null> {
     try {
       // First try to get profiles without .single() to avoid 406 errors
-      const { data: profiles, error } = await supabase
+      const { data: profiles, error } = await getSupabaseClient()
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -387,7 +393,7 @@ export const profileHelpers = {
 
   // Create or update profile
   async upsertProfile(profile: Omit<Profile, 'created_at' | 'updated_at'>): Promise<Profile> {
-    const insertResult = await supabase
+    const insertResult = await getSupabaseClient()
       .from('profiles')
       .upsert(profile)
       .select()

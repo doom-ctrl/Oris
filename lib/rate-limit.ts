@@ -36,8 +36,8 @@ export function rateLimit(
   } = {}
 ): RateLimitResult {
   const {
-    maxRequests = parseInt(env.RATE_LIMIT_MAX_REQUESTS),
-    windowMs = parseInt(env.RATE_LIMIT_WINDOW_MS)
+    maxRequests = env.RATE_LIMIT_MAX_REQUESTS,
+    windowMs = env.RATE_LIMIT_WINDOW_MS
   } = options
 
   const now = Date.now()

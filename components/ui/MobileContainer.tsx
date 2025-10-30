@@ -130,7 +130,7 @@ interface ResponsiveTextProps {
   className?: string
   size?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl'
   weight?: 'normal' | 'medium' | 'semibold' | 'bold'
-  as?: keyof JSX.IntrinsicElements
+  as?: React.ElementType
 }
 
 export function ResponsiveText({

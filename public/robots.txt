@@ -6,7 +6,7 @@ Disallow: /auth/
 Disallow: /profile/
 
 # Host
-Host: http://localhost:3010
+Host: http://localhost:3000
 
 # Sitemaps
-Sitemap: http://localhost:3010/sitemap.xml
+Sitemap: http://localhost:3000/sitemap.xml

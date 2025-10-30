@@ -19,8 +19,8 @@ const envSchema = z.object({
   NEXT_PUBLIC_VERCEL_ANALYTICS_ID: z.string().optional(),
 
   // Rate Limiting
-  RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).default("100"),
-  RATE_LIMIT_WINDOW_MS: z.string().transform(Number).default("900000"),
+  RATE_LIMIT_MAX_REQUESTS: z.number().default(100),
+  RATE_LIMIT_WINDOW_MS: z.number().default(900000),
 
   // Feature Flags
   NEXT_PUBLIC_ENABLE_ANALYTICS: z.string().transform(val => val === "true").default("false"),
@@ -34,14 +34,27 @@ const envSchema = z.object({
 // Validate and export environment variables with better error handling
 const envResult = envSchema.safeParse({
   ...process.env,
+  // Convert string environment variables to proper types
+  RATE_LIMIT_MAX_REQUESTS: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "100"),
+  RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS || "900000"),
   // Convert string booleans to actual booleans for feature flags
 })
 
 const parsedEnv = envResult.success ? envResult.data : {
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   NEXT_PUBLIC_APP_URL: 'http://localhost:3000',
   NEXT_PUBLIC_APP_NAME: 'Oris',
+  SENTRY_DSN: process.env.SENTRY_DSN,
+  SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
+  NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+  NEXT_PUBLIC_VERCEL_ANALYTICS_ID: process.env.NEXT_PUBLIC_VERCEL_ANALYTICS_ID,
+  RATE_LIMIT_MAX_REQUESTS: 100,
+  RATE_LIMIT_WINDOW_MS: 900000,
+  NEXT_PUBLIC_ENABLE_ANALYTICS: false,
+  NEXT_PUBLIC_ENABLE_ERROR_REPORTING: false,
+  NEXT_PUBLIC_ENABLE_PERFORMANCE_MONITORING: false,
   NODE_ENV: 'development',
 }
 

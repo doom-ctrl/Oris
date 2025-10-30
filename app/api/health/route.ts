@@ -1,10 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createBrowserSupabaseClient } from '@/lib/supabase-client'
 
+interface HealthCheck {
+  status: 'healthy' | 'degraded' | 'unhealthy'
+  timestamp: string
+  uptime: number
+  version: string
+  environment: string | undefined
+  checks: {
+    database: {
+      status: 'healthy' | 'unhealthy' | 'unknown'
+      responseTime: number
+      error?: string
+    }
+    memory: {
+      status: 'healthy' | 'warning' | 'unhealthy' | 'unknown'
+      usage: number
+      details?: {
+        used: number
+        total: number
+      }
+    }
+    disk: {
+      status: 'healthy' | 'warning' | 'unhealthy' | 'unknown'
+      usage: number
+    }
+  }
+  responseTime: number
+}
+
 export async function GET(request: NextRequest) {
   try {
     const startTime = Date.now()
-    const checks = {
+    const checks: HealthCheck = {
       status: 'healthy',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
@@ -22,6 +50,11 @@ export async function GET(request: NextRequest) {
     try {
       const dbStartTime = Date.now()
       const supabase = createBrowserSupabaseClient()
+
+      if (!supabase) {
+        throw new Error('Supabase client is not available - configuration missing')
+      }
+
       const { error } = await supabase.from('profiles').select('id').limit(1)
       const dbResponseTime = Date.now() - dbStartTime
 

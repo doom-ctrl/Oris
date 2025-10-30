@@ -114,14 +114,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string, options?: SignInOptions) => {
     try {
-      const redirectTo = options?.redirectTo || `${env.NEXT_PUBLIC_APP_URL}/assessments`
-
       const { error } = await supabase.auth.signInWithPassword({
         email,
-        password,
-        options: {
-          redirectTo
-        }
+        password
       })
       return { error }
     } catch (error) {
@@ -131,14 +126,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string, metadata?: any, options?: SignUpOptions) => {
     try {
-      const redirectTo = options?.redirectTo || `${env.NEXT_PUBLIC_APP_URL}/auth/sign-in`
+      const emailRedirectTo = options?.redirectTo || `${env.NEXT_PUBLIC_APP_URL}/auth/sign-in`
 
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: metadata || {},
-          redirectTo
+          emailRedirectTo
         }
       })
       return { error }
@@ -200,8 +195,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user])
 
+  const updateProfile = async (updates: Partial<Profile>) => {
+    if (!user) {
+      return { error: new Error('No authenticated user') }
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id)
+        .select()
+        .single()
+
+      if (error) {
+        return { error }
+      }
+
+      setProfile(data)
+      return { error: null, data }
+    } catch (error) {
+      return { error }
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, session, profile, isLoading, signIn, signUp, resetPassword, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user, session, profile, isLoading, signIn, signUp, resetPassword, signOut, refreshProfile, updateProfile }}>
       {children}
     </AuthContext.Provider>
   )
