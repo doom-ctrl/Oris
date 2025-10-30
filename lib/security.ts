@@ -6,10 +6,14 @@ export const cspHeader = [
   // Default to self for security
   "default-src 'self'",
 
-  // Scripts - allow self and unsafe-inline for development only
-  process.env.NODE_ENV === 'development'
-    ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
-    : "script-src 'self'",
+// Scripts - allow inline scripts that Next.js injects for hydration while
+// keeping the directive as strict as possible. Next currently injects a few
+// inline scripts without a nonce, so we explicitly permit them alongside self
+// hosted scripts. This still keeps third-party execution locked down because
+// no external origins are whitelisted here.
+process.env.NODE_ENV === 'development'
+  ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
+  : "script-src 'self' 'unsafe-inline'",
 
   // Styles - allow inline styles for TailwindCSS
   "style-src 'self' 'unsafe-inline'",
@@ -21,7 +25,7 @@ export const cspHeader = [
   "font-src 'self' data:",
 
   // Connect - allow API endpoints and Supabase
-  `connect-src 'self' ${env.NEXT_PUBLIC_SUPABASE_URL}`,
+`connect-src 'self' ${env.NEXT_PUBLIC_SUPABASE_URL} https://vitals.vercel-insights.com https://app.posthog.com`,
 
   // Frame-ancestors - prevent clickjacking
   "frame-ancestors 'none'",
